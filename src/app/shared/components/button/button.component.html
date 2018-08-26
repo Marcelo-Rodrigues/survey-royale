@@ -1,4 +1,11 @@
-<a class="button" [routerLink]="routerLink">
+<button [routerLink]="routerLink" [attr.disabled]="disabled ? disabled : null" (click)="doClick($event)"
+[ngClass]="{
+  'blue' : buttonType === ButtonTypeEnum.blue || buttonType === ButtonTypeEnum.default,
+  'gold' : buttonType === ButtonTypeEnum.gold,
+  'red' : buttonType === ButtonTypeEnum.red,
+  'green' : buttonType === ButtonTypeEnum.green,
+  'purple' : buttonType === ButtonTypeEnum.purple
+}">
   <ng-content>
   </ng-content>
-</a>
+</button>

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ButtonType } from '../shared/components/button/button-type.enum';
 
 @Component({
   selector: 'app-home',
@@ -7,6 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
+  ButtonTypeEnum = ButtonType;
+  
   constructor() { }
 
   ngOnInit() {

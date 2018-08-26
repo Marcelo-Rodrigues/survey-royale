@@ -22,6 +22,10 @@ const routes: Routes = [
   {
     path: 'survey',
     component: FindSurveyComponent
+  },
+  {
+    path: 'login',
+    component: FindSurveyComponent
   }
 ];
 

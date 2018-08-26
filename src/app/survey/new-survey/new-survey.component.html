@@ -1,4 +1,18 @@
-<form>
+<form #form>
   <label for="title">Título</label>
-  <input type="text" id="title" [ngModel]="text" (ngModelChange)="textChanged($event)">
+  <input type="text" name="title" [ngModel]="text" (ngModelChange)="textChanged($event)" [(ngModel)]="title">
+
+<p></p>
+  <label for="option">Opções de resposta</label>
+  <input #optionTextControl type="text" name="option" [(ngModel)]="newOptionTitle">
+  <app-button (click)="addOption(); optionTextControl.focus();" [buttonType]="ButtonTypeEnum.blue">Adicionar</app-button>
+        <ul>
+          <li *ngFor="let option of options">
+            {{option.title}}
+            <app-button [buttonType]="ButtonTypeEnum.red"
+            (click)="removeOption(option); optionTextControl.focus();">Remover</app-button>
+          </li>
+        </ul>
+
+  <app-button  [disabled]="!isValid()" (click)="createSurvey()" [buttonType]="ButtonTypeEnum.green">Concluir</app-button>
 </form>

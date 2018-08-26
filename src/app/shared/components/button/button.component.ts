@@ -1,5 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
+import { ButtonType } from './button-type.enum';
 
 @Component({
   selector: 'app-button',
@@ -8,11 +9,22 @@ import { RouterLink } from '@angular/router';
 })
 export class ButtonComponent implements OnInit {
 
-  @Input() routerLink: any;
-
-  constructor() { }
+  @Input() routerLink = null;
+  @Input() disabled = false;
+  @Output() click = new EventEmitter();
+  @Input() buttonType = ButtonType.default;
+  ButtonTypeEnum = ButtonType;
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
+  doClick(event: MouseEvent) {
+    if (this.routerLink) {
+      this.router.navigate(this.routerLink);
+    } else {
+      event.cancelBubble = true;
+      this.click.emit(event);
+    }
+  }
 }
