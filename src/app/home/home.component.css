@@ -1,0 +1,19 @@
+div.background {
+  background-image: url("/assets/SurveyRoyale.jpeg"); /* The image used */
+  background-color: #e3cac3; /* Used if the image is unavailable */
+  height: 500px; /* You must set a specified height */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: contain;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+.menu {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  text-align: center;
+}

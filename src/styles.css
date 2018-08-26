@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+
+body, input {
+  font-family: 'Burbank', Fallback, sans-serif !important;
+  font-size: 2rem;
+}
+
+body {
+  margin: 0;
+}
+
+@font-face {
+  font-family: 'Burbank';
+  src: url(assets/burbank.woff2) format('woff2');
+  /* src: url(assets/BurbankBigCondensed-Bold.otf) format('opentype'); */
+}

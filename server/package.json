@@ -1,0 +1,20 @@
+{
+  "name": "survey-royale-server",
+  "version": "1.0.0",
+  "description": "Web API e recursos estaticos do programa Survey Royale",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "survey online"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2",
+    "nedb": "^1.8.0",
+    "path": "^0.12.7"
+  }
+}

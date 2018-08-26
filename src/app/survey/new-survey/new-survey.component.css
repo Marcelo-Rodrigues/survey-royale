@@ -1,0 +1,36 @@
+input[type=text] {
+  flex: 1 1 auto;
+  margin: 10px;
+  padding: 20px;
+  border: 2px solid gold;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s;
+  background-image: radial-gradient(yellow, gold);
+  color: #000;
+  text-decoration: none;
+  font-size: 2rem;
+}
+
+input[type=text]:after {
+  position: absolute;
+  transition: 0.3s;
+  content: "";
+  width: 0;
+  left: 50%;
+  bottom: 0;
+  height: 3px;
+  background: gold;
+}
+
+input[type=text]:hover,input[type=text]:active {
+  cursor: pointer;
+  box-shadow: 0px 0px 0px 3px gold;
+}
+
+input[type=text]:hover:after {
+  width: 100%;
+  left: 0;
+  width: 0%;
+}
