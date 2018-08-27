@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
+// const fs = require('fs');
 const path = require('path');
 const app = express();
 const http = require('http').Server(app);
@@ -13,11 +13,12 @@ const surveyRooms = {};
 
 app.use(bodyParser.json());
 
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
+ app.use(function (req, res, next) {
+   res.header("Access-Control-Allow-Origin", "http://localhost:4200");
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+   res.header("Access-Control-Allow-Credentials", "true");
+   next();
+ });
 
 const FRONT_PATH = "../dist";
 
@@ -42,7 +43,7 @@ app.get('/api/survey/:id', function (req, res) {
   const room = surveyRooms[surveyId];
 
   if(room) {
-    res.send(getRoomPublicInfo(room));
+    res.send(getPublicSurveyInfo(room));
 
   } else {
     res.send();
@@ -61,7 +62,11 @@ app.get('/api/survey/:id', function (req, res) {
   // });
 });
 
-function getRoomPublicInfo(room) {
+app.get('/api/dump', function (req, res) {
+    res.send(surveyRooms);
+});
+
+function getPublicSurveyInfo(room) {
   return {
     surveyId: room.surveyId,
     title: room.title,
@@ -76,19 +81,20 @@ function generateGUID() {
 
 
 io.on('connection', (socket) => {
-  console.log('user connected', socket);
-  connection.on('enterSurvey', function(surveyConnectionInfo) {
+  console.log('user connected', socket.id);
+  socket.on('enterSurvey', function(surveyConnectionInfo) {
     const room = surveyRooms[surveyConnectionInfo.surveyId];
 
     if(room) {
       addParticipant(room, socket, surveyConnectionInfo);
       console.log('enteredSurvey');
+      socket.emit('surveyInfo', getPublicSurveyInfo(room));
     } else {
       socket.emit('error',{message:'Survey não encontrado'});
     }
   });
 
-  connection.on('adminSurvey', function(surveyConnectionInfo) {
+  socket.on('adminSurvey', function(surveyConnectionInfo) {
     const room = surveyRooms[surveyConnectionInfo.surveyId];
 
     if(room) {
@@ -103,7 +109,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  connection.on('newQuestion', function(surveyConnectionInfo) {
+  socket.on('newQuestion', function(surveyConnectionInfo) {
     const room = surveyRooms[surveyConnectionInfo.surveyId];
 
     if(room) {
@@ -114,7 +120,7 @@ io.on('connection', (socket) => {
         socket.emit('error',{message:'Senha de admin inválida'});
       }
     } else {
-      socket.emit('error',{message:'Survey não encontrado'});
+      socket.emit('error',{message:'Survey '+surveyConnectionInfo.surveyId+' não encontrado'});
     }
   });
 
@@ -123,17 +129,18 @@ io.on('connection', (socket) => {
     if(!room) {
       socket.emit('error',{message:'Survey não encontrado'});
     } else {
-      doAnswer(socket.id, room, answer);
+      doAnswer(socket.id, room, answer.answer);
     }
   });
 
   socket.on('disconnect', function(){
     deleteUser(socket.id);
-    console.log('user disconnected');
+    console.log('user disconnected '+socket.id);
   });
 
-  socket.on('add-message', (message) => {
-    io.emit('message', {type:'new-message', text: message});
+  socket.on('error', function(err){
+    console.error(err);
+
   });
 });
 
@@ -148,7 +155,7 @@ function deleteUserFromRoom(room, target, id, event) {
   const user = target[id];
   if(user) {
     const userName = user.title;
-    delete target[adminId];
+    delete target[id];
 
     notifyAdmins(room, event, adminName);
   }
@@ -174,8 +181,8 @@ function createRoom(configRoom) {
     options: configRoom.options
   };
 
-  surveyRooms[roomId] = room;
-  console.log('room '+roomId+' created');
+  surveyRooms[room.surveyId] = room;
+  console.log('room '+room.surveyId+' created');
   return room;
 }
 
@@ -184,6 +191,32 @@ function doAnswer(participantId, room, answer) {
     date: Date.now(),
     answer: answer
   };
+
+  const answerMessage = {
+    answers: room.answers,
+    pendingParticipants: getPublicParticipantInformation(getPendingParticipants(room))
+  };
+
+  notifyAdmins(room, 'answer', answerMessage);
+}
+
+function getPublicParticipantInformation(participants) {
+  return participants.map(function(participant){
+    return {
+      id: participant.socket.id,
+      name: participant.socket.id
+    };
+  })
+}
+
+function getPendingParticipants(room) {
+  const pendingParticipants = [];
+  Object.keys(room.participants).forEach(function(participantId){
+    if(!answers[participantId]) {
+      pendingParticipants.push(room.participants[participantId]);
+    }
+  });
+  return pendingParticipants;
 }
 
 function notifyAdmins(room, event, data) {
@@ -224,7 +257,7 @@ app.get('*', function (req, res) {
   res.sendFile(path.resolve(FRONT_PATH,'index.html'));
 });
 
-app.listen(app.get('port'), function () {
+http.listen(app.get('port'), function () {
   console.log('Survey Royale Server iniciado na porta ', app.get('port'));
   console.log(`http://localhost:${app.get('port')}/`);
 });

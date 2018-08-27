@@ -14,3 +14,13 @@ body {
   src: url(assets/burbank.woff2) format('woff2');
   /* src: url(assets/BurbankBigCondensed-Bold.otf) format('opentype'); */
 }
+
+table.form {
+  background-color: beige;
+  padding: 20px;
+  margin: 20px;
+}
+
+table.form td.centered {
+  text-align: center;
+}

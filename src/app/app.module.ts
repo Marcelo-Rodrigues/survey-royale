@@ -6,19 +6,22 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { NewSurveyComponent } from './survey/new-survey/new-survey.component';
-import { FindSurveyComponent } from './survey/find-survey/find-survey.component';
+import { AnswerSurveyComponent } from './survey/answer-survey/answer-survey.component';
 import { AdminSurveyComponent } from './survey/admin-survey/admin-survey.component';
 import { ButtonComponent } from './shared/components/button/button.component';
 import { TypeSurveyService } from './type-survey.service';
+import { SurveyService } from './shared/survey.service';
+import { LoginComponent } from './survey/login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     NewSurveyComponent,
-    FindSurveyComponent,
+    AnswerSurveyComponent,
     AdminSurveyComponent,
-    ButtonComponent
+    ButtonComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +29,8 @@ import { TypeSurveyService } from './type-survey.service';
     FormsModule
   ],
   providers: [
-    TypeSurveyService
+    TypeSurveyService,
+    SurveyService
   ],
   bootstrap: [AppComponent]
 })

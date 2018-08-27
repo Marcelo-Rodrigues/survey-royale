@@ -2,6 +2,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { SurveyModel } from '../../model/survey-model';
 import { ButtonType } from '../../shared/components/button/button-type.enum';
 import { SurveyOption } from '../../model/survey-option';
+import { SurveyService } from '../../shared/survey.service';
+import { MessageType } from '../../shared/messages/message-type';
+import { AdminSurveyInfo } from '../../shared/messages/admin-survey-info';
 
 @Component({
   selector: 'app-new-survey',
@@ -18,8 +21,9 @@ export class NewSurveyComponent implements OnInit {
   title = '';
   options: SurveyOption[] = [];
   newOptionTitle = '';
+  createdSurvey = null;
 
-  constructor() {}
+  constructor(private surveyService: SurveyService) {}
 
   textChanged(event) {
     this.textChange.emit(event);
@@ -37,16 +41,17 @@ export class NewSurveyComponent implements OnInit {
   removeOption(option) {
     console.log(option);
     const optionIndex = this.options.indexOf(option);
-    if(optionIndex > -1) {
+    if (optionIndex > -1) {
       this.options.splice(optionIndex, 1);
     }
   }
 
   createSurvey() {
     if (this.isValid()) {
-      console.log(
-        new SurveyModel(this.title, this.options)
-      );
+      this.surveyService.createSurvey(new SurveyModel(this.title, this.options))
+      .subscribe((survey)=>{
+        this.createdSurvey = survey;
+      });
     }
   }
 

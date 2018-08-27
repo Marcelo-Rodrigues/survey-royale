@@ -1,18 +1,63 @@
 <form #form>
-  <label for="title">Título</label>
-  <input type="text" name="title" [ngModel]="text" (ngModelChange)="textChanged($event)" [(ngModel)]="title">
+  <table class="form" *ngIf="!createdSurvey">
+    <tr>
+      <td colspan="2">
+        <label for="title">Título</label>
+        <input type="text" name="title" [ngModel]="text" (ngModelChange)="textChanged($event)" [(ngModel)]="title">
+      </td>
+    </tr>
+   <tr>
+     <td colspan="2">Adicionar Opção de Resposta:</td>
+   </tr>
+    <tr>
+      <td>
+        <input #optionTextControl type="text" name="option" [(ngModel)]="newOptionTitle">
+      </td>
+      <td>
+        <app-button (click)="addOption(); optionTextControl.focus();" [buttonType]="ButtonTypeEnum.blue">Adicionar</app-button>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+          <label>Opções de resposta adicionadas:</label>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <table>
+            <tr *ngFor="let option of options">
+              <td>
+                {{option.title}}
+              </td>
+              <td>
+                <app-button [buttonType]="ButtonTypeEnum.red"
+                (click)="removeOption(option); optionTextControl.focus();">Remover</app-button>
+              </td>
+            </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <app-button  [disabled]="!isValid()" (click)="createSurvey()" [buttonType]="ButtonTypeEnum.green">Criar Survey</app-button>
+      </td>
+    </tr>
+  </table>
 
-<p></p>
-  <label for="option">Opções de resposta</label>
-  <input #optionTextControl type="text" name="option" [(ngModel)]="newOptionTitle">
-  <app-button (click)="addOption(); optionTextControl.focus();" [buttonType]="ButtonTypeEnum.blue">Adicionar</app-button>
-        <ul>
-          <li *ngFor="let option of options">
-            {{option.title}}
-            <app-button [buttonType]="ButtonTypeEnum.red"
-            (click)="removeOption(option); optionTextControl.focus();">Remover</app-button>
-          </li>
-        </ul>
 
-  <app-button  [disabled]="!isValid()" (click)="createSurvey()" [buttonType]="ButtonTypeEnum.green">Concluir</app-button>
 </form>
+
+<table class="form" *ngIf="createdSurvey">
+  <tr>
+    <td>Survey Criado!</td>
+  </tr>
+  <tr>
+    <td>
+      Compartilhe o link de acesso: http://dominio<input type="text" [value]="'/survey/'+createdSurvey.surveyId">
+    </td>
+  </tr>
+  <td>
+      <input type="text" [routerLink]="['../surveyadmin/',createdSurvey.surveyId]">
+  </td>
+</table>
+

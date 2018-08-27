@@ -1,0 +1,11 @@
+<table>
+  <tr *ngFor="let option of surveyInfo?.options; let idx = index">
+      <td>{{option.title}}</td>
+      <td>
+          <input type="radio" name="radiogroup"
+              [checked]="idx === 0"
+              [value]="option.title"
+              (change)="onOptionChange(option)">
+      </td>
+  </tr>
+</table>
