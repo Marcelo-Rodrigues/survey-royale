@@ -48,7 +48,7 @@ export class SurveyService {
       this.getSocket().on(MessageControl.ServerMessages.SURVEY_INFO_EVENT, (data: CreatedPublicSurveyInfo) => {
         observer.next(new SurveyInfoMessage(data));
       });
-
+console.log(surveyConnectionInfo,surveyConnectionInfo.serialize());
       this.getSocket().emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.serialize());
 
       return () => {

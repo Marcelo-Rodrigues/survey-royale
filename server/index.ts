@@ -96,10 +96,13 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
   }
 
   socket.on(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {
+    if(VERBOSE_MODE) {
+      console.log(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo) ;
+    }
         getSurvey(socket, surveyConnectionInfo.surveyId,
           (survey) => {
             if(VERBOSE_MODE) {
-              console.log(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo) ;
+              console.log(survey) ;
             }
             survey.addParticipant(new Client(socket, surveyConnectionInfo.participantName));
             const response = survey.getPublicSurveyInfo().serialize();

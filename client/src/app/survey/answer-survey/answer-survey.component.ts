@@ -39,7 +39,7 @@ export class AnswerSurveyComponent implements OnInit, OnDestroy {
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
-
+console.log(new SurveyConnectionInfo(surveyId, participantName));
       this.subscription = this.surveyService.enterSurvey(new SurveyConnectionInfo(surveyId, participantName))
         .subscribe((msg) => {
           switch (msg.type) {
