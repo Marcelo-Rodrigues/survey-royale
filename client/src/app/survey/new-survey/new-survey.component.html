@@ -53,11 +53,19 @@
   </tr>
   <tr>
     <td>
-      Compartilhe o link de acesso: http://dominio<input type="text" [value]="'/survey/'+createdSurvey.surveyId">
+      Compartilhe o link de acesso:
     </td>
   </tr>
-  <td>
-      <input type="text" [routerLink]="['../surveyadmin/',createdSurvey.surveyId]">
-  </td>
+  <tr>
+    <td>
+      <input #surveyLinkInput type="text" [value]="getSurveyUrl()" class="surveyLink">
+      <button (click)="copyInputMessage(surveyLinkInput)" value="click to copy" >Copiar</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <a [routerLink]="['..', '..', 'surveyadmin', createdSurvey.surveyId]">Administrar Sala</a>
+    </td>
+  </tr>
 </table>
 

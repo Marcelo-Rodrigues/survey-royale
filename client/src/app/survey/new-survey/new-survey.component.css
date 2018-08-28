@@ -34,3 +34,7 @@ input[type=text]:hover:after {
   left: 0;
   width: 0%;
 }
+
+.surveyLink {
+  width: 300px;
+}

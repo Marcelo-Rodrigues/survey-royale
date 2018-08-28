@@ -34,7 +34,7 @@ export class SurveyService {
   }
 
   createSurvey(survey: PublicSurveyInfo) {
-    return this.http.post<PublicSurveyInfo>(`${this.url}api/survey`, survey);
+    return this.http.post<CreatedPublicSurveyInfo>(`${this.url}api/survey`, survey.serialize());
   }
 
   enterSurvey(surveyConnectionInfo: SurveyConnectionInfo): Observable<Message> {
@@ -48,7 +48,7 @@ export class SurveyService {
         observer.next(new SurveyInfoMessage(data));
       });
 
-      this.getSocket().emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo);
+      this.getSocket().emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.serialize());
 
       return () => {
         this.socket.disconnect();

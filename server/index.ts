@@ -8,6 +8,7 @@ import { Client } from './Client';
 import { MessageControl } from '../shared/MessageControl';
 import { Answer } from '../shared/Answer';
 import { Utils } from './Utils';
+import { PublicSurveyInfo } from '../shared/PublicSurveyInfo';
 
 const app = express();
 const http = require('http').Server(app);
@@ -27,15 +28,14 @@ app.use(function(req, res, next) {
   next();
 });
 
-const FRONT_PATH = '../dist';
+const FRONT_PATH = '../client/dist';
 
 app.set('port', process.env.PORT || 8090);
 app.use(express.static(path.resolve(FRONT_PATH)));
 
 app.post('/api/survey', (req, res) => {
-  const survey: Survey = req.body;
-  const surveyRoom = createSurvey(survey);
-  res.send(surveyRoom);
+  const survey: PublicSurveyInfo = req.body;
+  res.send(createSurvey(survey).getAdminPublicSurveyInfo().serialize());
 });
 
 app.get('/api/survey/:id', function(req, res) {
@@ -43,7 +43,7 @@ app.get('/api/survey/:id', function(req, res) {
   const survey = surveyServerControl[surveyId];
 
   if (survey) {
-    res.send(survey.getPublicSurveyInfo());
+    res.send(survey.getPublicSurveyInfo().serialize());
   } else {
     res.send();
   }
@@ -53,7 +53,7 @@ app.get('/api/dump', function(req, res) {
   res.send(surveyServerControl);
 });
 
-function createSurvey(survey: Survey) {
+function createSurvey(survey: PublicSurveyInfo) {
   const createdSurvey = new Survey(survey.title, survey.options);
   surveyServerControl[createdSurvey.surveyId] = createdSurvey;
   return createdSurvey;
@@ -87,7 +87,7 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
         getSurvey(socket, surveyConnectionInfo.surveyId,
           (survey) => {
             survey.addParticipant(new Client(socket, surveyConnectionInfo.participantName));
-            socket.emit(MessageControl.ServerMessages.SURVEY_INFO_EVENT, survey.getPublicSurveyInfo());
+            socket.emit(MessageControl.ServerMessages.SURVEY_INFO_EVENT, survey.getPublicSurveyInfo().serialize());
         });
     });
 

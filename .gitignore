@@ -5,6 +5,9 @@ client/dist
 client/tmp
 client/out-tsc
 
+# compiled server output
+server/dist
+
 # dependencies
 **/node_modules
 

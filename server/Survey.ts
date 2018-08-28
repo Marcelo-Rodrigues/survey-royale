@@ -4,8 +4,9 @@ import { Utils } from './Utils';
 import { SurveyOption } from '../shared/SurveyOption';
 import { MessageControl } from '../shared/MessageControl';
 import { DisconnectedClient } from '../shared/DisconnectedClient';
-import { PublicSurveyInfo } from '../shared/PublicSurveyInfo';
 import { CreatedPublicSurveyInfo } from '../shared/CreatedPublicSurveyInfo';
+import { Serializable } from '../shared/Serializable';
+import { isArray } from 'util';
 
 export class Survey {
   private _participants: { [key: string]: Client };
@@ -58,8 +59,7 @@ export class Survey {
       answer);
 
     this.emitToAdmins(MessageControl.ServerMessages.PARTICIPANT_PENDING_CHANGE_EVENT,
-      this.getPendingParticipants()
-        .map(participant => participant.getPublicInfo()));
+      this.getPendingParticipants().map(participant => participant.getPublicInfo()));
   }
 
   public resetAnswers(notifyParticipants = true, notififyAdmins = true) {
@@ -89,7 +89,7 @@ export class Survey {
     );
   }
 
-  public getAdminSurveyInfo() {
+  public getAdminPublicSurveyInfo() {
     return new CreatedPublicSurveyInfo(
       this.title,
       this.options,
@@ -134,21 +134,33 @@ export class Survey {
     }
   }
 
-  private emitToParticipants(event: string, ...args: any[]) {
-    this.emitToClients(this._participants, event, args);
+  private emitToParticipants(event: string, obj?: Serializable | Serializable[]) {
+    this.emitToClients(this._participants, event, obj);
   }
 
-  private emitToAdmins(event: string, ...args: any[]) {
-    this.emitToClients(this._admins, event, args);
+  private emitToAdmins(event: string, obj?: Serializable | Serializable[]) {
+    this.emitToClients(this._admins, event, obj);
   }
 
   private emitToClients(
     target: { [key: string]: Client },
     event: string,
-    ...args: any[]
+    objects?: Serializable | Serializable[]
   ) {
-    Utils.getObjectValues<Client>(target).forEach(client =>
-      client.emit(event, args)
-    );
+    let emitFunction: (client: Client) => any;
+
+    if(objects) {
+      const serializedObjects = 
+      isArray(objects) ?
+        objects.map(obj => obj.serialize())
+        : objects.serialize();
+      
+        emitFunction = client => client.emit(event, serializedObjects)
+
+    } else {
+      emitFunction = client => client.emit(event)
+    }
+
+    Utils.getObjectValues<Client>(target).forEach(emitFunction);
   }
 }

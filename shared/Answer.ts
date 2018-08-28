@@ -1,6 +1,7 @@
 import { SurveyOption } from './SurveyOption';
+import { Serializable } from './Serializable'
 
-export class Answer {
+export class Answer implements Serializable {
   private _date: Date;
 
   constructor(private _surveyId: string, private _participantId: string, private _option: SurveyOption) {
@@ -21,5 +22,14 @@ export class Answer {
 
   get surveyId() {
     return this._surveyId;
+  }
+
+  serialize() {
+    return {
+      participantId: this.participantId,
+      option: this.option,
+      date: this.date,
+      surveyId: this.surveyId
+    };
   }
 }
