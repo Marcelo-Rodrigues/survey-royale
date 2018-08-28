@@ -4,13 +4,16 @@ import { Observable } from 'rxjs/Observable';
 import { NewQuestionMessage } from './messages/new-question-message';
 import { Message } from './messages/message';
 import { AnswerMessage } from './messages/answer-message';
-import { MessageType } from './messages/message-type';
 import { SurveyInfoMessage } from './messages/survey-info-message';
+import { MessageControl } from '../../../../shared/MessageControl';
+import { HttpClient } from '@angular/common/http';
+import { PublicSurveyInfo } from '../../../../shared/PublicSurveyInfo';
+import { SurveyConnectionInfo } from '../../../../shared/SurveyConnectionInfo';
+import { CreatedPublicSurveyInfo } from '../../../../shared/CreatedPublicSurveyInfo';
 
 @Injectable()
 export class SurveyService {
-
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   private url = 'http://localhost:8090/';
   private socket;
@@ -30,18 +33,22 @@ export class SurveyService {
     return this.socket;
   }
 
-  enterSurvey(name): Observable<Message> {
+  createSurvey(survey: PublicSurveyInfo) {
+    return this.http.post<PublicSurveyInfo>(`${this.url}api/survey`, survey);
+  }
+
+  enterSurvey(surveyConnectionInfo: SurveyConnectionInfo): Observable<Message> {
     return new Observable(observer => {
 
-      this.getSocket().on(MessageType.newQuestion, (data) => {
+      this.getSocket().on(MessageControl.ServerMessages.RESETED_ANSWER_EVENT, (data) => {
         observer.next(new NewQuestionMessage(data));
       });
 
-      this.getSocket().on(MessageType.surveyInfo, (data) => {
+      this.getSocket().on(MessageControl.ServerMessages.SURVEY_INFO_EVENT, (data: CreatedPublicSurveyInfo) => {
         observer.next(new SurveyInfoMessage(data));
       });
 
-      this.getSocket().emit('enterSurvey',{name:name});
+      this.getSocket().emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo);
 
       return () => {
         this.socket.disconnect();

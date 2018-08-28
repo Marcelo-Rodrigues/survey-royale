@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { LoginComponent } from '../login/login.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SurveyService } from '../../shared/survey.service';
 import { Subscription } from 'rxjs/Subscription';
-import { MessageType } from '../../shared/messages/message-type';
 import { SurveyInfoMessage } from '../../shared/messages/survey-info-message';
-import { AnswerMessage } from '../../shared/messages/answer-message';
+import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
+import { MessageControl } from '../../../../../shared/MessageControl';
 
 @Component({
   selector: 'app-answer-survey',
@@ -18,33 +18,42 @@ export class AnswerSurveyComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   surveyInfo: SurveyInfoMessage;
 
-  constructor(private router: Router, private surveyService: SurveyService) { }
+  constructor(private activateRoute: ActivatedRoute, private router: Router, private surveyService: SurveyService) { }
 
   ngOnInit() {
+
+    this.activateRoute.params.subscribe((param) => this.connect(param.surveyId));
+
+  }
+
+  connect(surveyId: string) {
     const participantName = localStorage.getItem(LoginComponent.PARTICIPANT_NAME);
     if (participantName) {
-      this.subscription = this.surveyService.enterSurvey(participantName)
+      if (this.subscription) {
+        this.subscription.unsubscribe();
+      }
+
+      this.subscription = this.surveyService.enterSurvey(new SurveyConnectionInfo(surveyId, participantName))
         .subscribe((msg) => {
           switch (msg.type) {
-            case MessageType.surveyInfo:
+            case MessageControl.ServerMessages.SURVEY_INFO_EVENT:
               this.newSurveyInfo(<SurveyInfoMessage>msg);
               break;
-            case MessageType.newQuestion:
-              this.newQuestion();
+            case MessageControl.ServerMessages.RESETED_ANSWER_EVENT:
+              this.resetAnswer();
               break;
           }
         });
     } else {
       this.router.navigateByUrl('/login');
     }
-
   }
 
   newSurveyInfo(surveyInfo: SurveyInfoMessage) {
     this.surveyInfo = surveyInfo;
   }
 
-  newQuestion() {
+  resetAnswer() {
     this.pendingAnswer = true;
   }
 

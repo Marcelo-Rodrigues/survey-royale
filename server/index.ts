@@ -3,15 +3,15 @@ import express = require('express');
 import bodyParser = require('body-parser');
 import path = require('path');
 import { Survey } from './Survey';
-import { SurveyConnectionInfo } from './model/SurveyConnectionInfo';
-import { Client } from './model/Client';
-import { MessageControl } from './model/MessageControl';
-import { Answer } from './model/Answer';
-import { Utils } from './model/Utils';
+import { SurveyConnectionInfo } from '../shared/SurveyConnectionInfo';
+import { Client } from './Client';
+import { MessageControl } from '../shared/MessageControl';
+import { Answer } from '../shared/Answer';
+import { Utils } from './Utils';
 
 const app = express();
 const http = require('http').Server(app);
-const socketIo = require('socket.io')(http);
+const socketIoServer = require('socket.io')(http);
 
 const surveyServerControl: { [key: string]: Survey} = {};
 
@@ -59,7 +59,7 @@ function createSurvey(survey: Survey) {
   return createdSurvey;
 }
 
-function getSurvey(socket: SocketIOClient.Socket, surveyId: string, callback: (survey: Survey) => any|void) {
+function getSurvey(socket: SocketIO.Socket, surveyId: string, callback: (survey: Survey) => any|void) {
     const survey = surveyServerControl[surveyId];
 
     if (survey) {
@@ -69,7 +69,7 @@ function getSurvey(socket: SocketIOClient.Socket, surveyId: string, callback: (s
     }
 }
 
-function getSurveyAdmin(socket: SocketIOClient.Socket, surveyId: string, adminPwd: string, callback: (survey: Survey) => any|void) {
+function getSurveyAdmin(socket: SocketIO.Socket, surveyId: string, adminPwd: string, callback: (survey: Survey) => any|void) {
   getSurvey(socket, surveyId,
     (survey) => {
       if (survey.isValidAdmin(adminPwd)) {
@@ -80,7 +80,7 @@ function getSurveyAdmin(socket: SocketIOClient.Socket, surveyId: string, adminPw
     });
 }
 
-socketIo.on('connection', (socket: SocketIOClient.Socket) => {
+socketIoServer.on('connection', (socket: SocketIO.Socket) => {
   console.log('user connected', socket.id);
 
   socket.on(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {

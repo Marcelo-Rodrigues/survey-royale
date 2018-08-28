@@ -12,6 +12,7 @@ import { ButtonComponent } from './shared/components/button/button.component';
 import { TypeSurveyService } from './type-survey.service';
 import { SurveyService } from './shared/survey.service';
 import { LoginComponent } from './survey/login/login.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { LoginComponent } from './survey/login/login.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [
     TypeSurveyService,

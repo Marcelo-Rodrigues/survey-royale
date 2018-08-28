@@ -1,11 +1,11 @@
-import { Client } from './model/Client';
-import { Answer } from './model/Answer';
-import { Utils } from './model/Utils';
-import { SurveyOption } from './model/SurveyOption';
-import { MessageControl } from './model/MessageControl';
-import { DisconnectedClient } from './model/DisconnectedClient';
-import { PublicSurveyInfo } from './model/PublicSurveyInfo';
-import { PublicClientInfo } from './model/PublicClientInfo';
+import { Client } from './Client';
+import { Answer } from '../shared/Answer';
+import { Utils } from './Utils';
+import { SurveyOption } from '../shared/SurveyOption';
+import { MessageControl } from '../shared/MessageControl';
+import { DisconnectedClient } from '../shared/DisconnectedClient';
+import { PublicSurveyInfo } from '../shared/PublicSurveyInfo';
+import { CreatedPublicSurveyInfo } from '../shared/CreatedPublicSurveyInfo';
 
 export class Survey {
   private _participants: { [key: string]: Client };
@@ -81,20 +81,20 @@ export class Survey {
   }
 
   public getPublicSurveyInfo() {
-    return new PublicSurveyInfo(
-      this.date,
-      this.surveyId,
+    return new CreatedPublicSurveyInfo(
       this.title,
-      this.options
+      this.options,
+      this.date,
+      this.surveyId
     );
   }
 
   public getAdminSurveyInfo() {
-    return new PublicSurveyInfo(
-      this.date,
-      this.surveyId,
+    return new CreatedPublicSurveyInfo(
       this.title,
       this.options,
+      this.date,
+      this.surveyId,
       this.adminPwd
     );
   }

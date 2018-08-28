@@ -1,4 +1,3 @@
-import { Client } from './Client';
 import { SurveyOption } from './SurveyOption';
 
 export class Answer {

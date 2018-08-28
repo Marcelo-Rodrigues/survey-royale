@@ -1,10 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { SurveyModel } from '../../model/survey-model';
 import { ButtonType } from '../../shared/components/button/button-type.enum';
-import { SurveyOption } from '../../model/survey-option';
 import { SurveyService } from '../../shared/survey.service';
-import { MessageType } from '../../shared/messages/message-type';
-import { AdminSurveyInfo } from '../../shared/messages/admin-survey-info';
+import { SurveyOption } from '../../../../../shared/SurveyOption';
+import { PublicSurveyInfo } from '../../../../../shared/PublicSurveyInfo';
 
 @Component({
   selector: 'app-new-survey',
@@ -21,7 +19,7 @@ export class NewSurveyComponent implements OnInit {
   title = '';
   options: SurveyOption[] = [];
   newOptionTitle = '';
-  createdSurvey = null;
+  createdSurvey: PublicSurveyInfo = null;
 
   constructor(private surveyService: SurveyService) {}
 
@@ -48,8 +46,8 @@ export class NewSurveyComponent implements OnInit {
 
   createSurvey() {
     if (this.isValid()) {
-      this.surveyService.createSurvey(new SurveyModel(this.title, this.options))
-      .subscribe((survey)=>{
+      this.surveyService.createSurvey(new PublicSurveyInfo(this.title, this.options))
+      .subscribe((survey) => {
         this.createdSurvey = survey;
       });
     }

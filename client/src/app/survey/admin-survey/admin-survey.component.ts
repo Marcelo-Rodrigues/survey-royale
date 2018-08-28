@@ -22,7 +22,7 @@ export class AdminSurveyComponent implements OnInit, OnDestroy {
 
     this.routeSubscription = this.route.queryParams.subscribe(params => {
        this.surveyId = params['surveyId'];
-       this.conectarAdmin(this.surveyId, localStorage.getItem(AdminSurveyComponent.ADM_PASSWORD);
+       this.conectarAdmin(this.surveyId, localStorage.getItem(AdminSurveyComponent.ADM_PASSWORD));
     });
 
   }
