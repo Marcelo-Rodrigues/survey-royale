@@ -17,11 +17,11 @@ const routes: Routes = [
     component: NewSurveyComponent
   },
   {
-    path: 'surveyadmin/:id',
+    path: 'surveyadmin/:surveyId',
     component: AdminSurveyComponent
   },
   {
-    path: 'survey/:id',
+    path: 'survey/:surveyId',
     component: AnswerSurveyComponent
   },
   {

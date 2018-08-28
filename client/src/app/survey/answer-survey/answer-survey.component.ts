@@ -22,12 +22,19 @@ export class AnswerSurveyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.activateRoute.params.subscribe((param) => this.connect(param.surveyId));
+    this.activateRoute.params.subscribe((param) =>{
+      console.log(param);
+       this.connect(param.surveyId);
+      });
 
   }
 
   connect(surveyId: string) {
     const participantName = localStorage.getItem(LoginComponent.PARTICIPANT_NAME);
+    if (!participantName) {
+      this.router.navigateByUrl('/login');
+    }
+
     if (participantName) {
       if (this.subscription) {
         this.subscription.unsubscribe();
@@ -58,7 +65,9 @@ export class AnswerSurveyComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    if (this.subscription){
+      this.subscription.unsubscribe();
+    }
   }
 
   onOptionChange(newOpion) {

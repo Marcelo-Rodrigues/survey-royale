@@ -11,6 +11,8 @@ import { CreatedPublicSurveyInfo } from '../../../../../shared/CreatedPublicSurv
   styleUrls: ['./new-survey.component.css']
 })
 export class NewSurveyComponent implements OnInit {
+  public static STORAGE_ADMINS = 'storageAdmins';
+
   @Input()
   text: string;
   @Output()
@@ -48,8 +50,26 @@ export class NewSurveyComponent implements OnInit {
   createSurvey() {
     if (this.isValid()) {
       this.surveyService.createSurvey(new PublicSurveyInfo(this.title, this.options))
-      .subscribe((survey) => {
-        this.createdSurvey = survey;
+      .subscribe((createdSurvey: CreatedPublicSurveyInfo) => {
+        this.createdSurvey = new CreatedPublicSurveyInfo(createdSurvey.title,
+          createdSurvey.options,
+          createdSurvey.date,
+          createdSurvey.surveyId,
+          createdSurvey.adminPwd);
+
+        let storageAdmins: {[key: string]: CreatedPublicSurveyInfo} = JSON.parse(localStorage.getItem('surveyAdminInfo'));
+
+        if (!storageAdmins) {
+          storageAdmins = {};
+        }
+
+        storageAdmins[createdSurvey.surveyId] = this.createdSurvey;
+
+        const serializedStorageAdmins: {[key: string]: {}} = {};
+
+        Object.values(storageAdmins).forEach(surveyAdmin => serializedStorageAdmins[surveyAdmin.surveyId] = surveyAdmin.serialize());
+
+        localStorage.setItem(NewSurveyComponent.STORAGE_ADMINS, JSON.stringify(serializedStorageAdmins));
       });
     }
   }

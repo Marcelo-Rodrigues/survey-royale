@@ -16,6 +16,8 @@ const socketIoServer = require('socket.io')(http);
 
 const surveyServerControl: { [key: string]: Survey} = {};
 
+const VERBOSE_MODE = true;
+
 app.use(bodyParser.json());
 
 app.use(function(req, res, next) {
@@ -36,6 +38,9 @@ app.use(express.static(path.resolve(FRONT_PATH)));
 app.post('/api/survey', (req, res) => {
   const survey: PublicSurveyInfo = req.body;
   res.send(createSurvey(survey).getAdminPublicSurveyInfo().serialize());
+  if(VERBOSE_MODE) {
+    console.log('[post] /api/survey:', survey);
+  }
 });
 
 app.get('/api/survey/:id', function(req, res) {
@@ -47,11 +52,16 @@ app.get('/api/survey/:id', function(req, res) {
   } else {
     res.send();
   }
+  if(VERBOSE_MODE) {
+    console.log('[get] /api/survey/' + surveyId);
+  }
 });
 
-app.get('/api/dump', function(req, res) {
-  res.send(surveyServerControl);
-});
+if(VERBOSE_MODE) {
+  app.get('/api/dump', function(req, res) {
+    res.send(surveyServerControl);
+  });
+}
 
 function createSurvey(survey: PublicSurveyInfo) {
   const createdSurvey = new Survey(survey.title, survey.options);
@@ -61,11 +71,11 @@ function createSurvey(survey: PublicSurveyInfo) {
 
 function getSurvey(socket: SocketIO.Socket, surveyId: string, callback: (survey: Survey) => any|void) {
     const survey = surveyServerControl[surveyId];
-
+   
     if (survey) {
       callback(survey);
     } else {
-      socket.emit('error', MessageControl.ServerErrorDescription.SURVEY_NOT_FOUND_ERR);
+      socket.emit('error', MessageControl.ServerErrorDescription.SURVEY_NOT_FOUND_ERR(surveyId));
     }
 }
 
@@ -75,42 +85,72 @@ function getSurveyAdmin(socket: SocketIO.Socket, surveyId: string, adminPwd: str
       if (survey.isValidAdmin(adminPwd)) {
         callback(survey);
       } else {
-        socket.emit('error', MessageControl.ServerErrorDescription.ADMIN_INVALID_PWD);
+        socket.emit('error', MessageControl.ServerErrorDescription.ADMIN_INVALID_PWD());
       }
     });
 }
 
 socketIoServer.on('connection', (socket: SocketIO.Socket) => {
-  console.log('user connected', socket.id);
+  if(VERBOSE_MODE) {
+    console.log('user connected', socket.id);
+  }
 
   socket.on(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {
         getSurvey(socket, surveyConnectionInfo.surveyId,
           (survey) => {
+            if(VERBOSE_MODE) {
+              console.log(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo) ;
+            }
             survey.addParticipant(new Client(socket, surveyConnectionInfo.participantName));
-            socket.emit(MessageControl.ServerMessages.SURVEY_INFO_EVENT, survey.getPublicSurveyInfo().serialize());
+            const response = survey.getPublicSurveyInfo().serialize();
+            if(VERBOSE_MODE) {
+              console.log(MessageControl.ServerMessages.SURVEY_INFO_EVENT, response) ;
+            }
+            socket.emit(MessageControl.ServerMessages.SURVEY_INFO_EVENT, response);
         });
     });
 
   socket.on(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {
+    if(VERBOSE_MODE) {
+      console.log(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, socket.id, surveyConnectionInfo.surveyId, <string>surveyConnectionInfo.adminPwd) ;
+    }
     getSurveyAdmin(socket, surveyConnectionInfo.surveyId, <string>surveyConnectionInfo.adminPwd,
-      (survey) => survey.addAdmin(new Client(socket))
+      (survey) => {
+        if(VERBOSE_MODE) {
+          console.log(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, socket.id) ;
+        }
+        survey.addAdmin(new Client(socket));
+      }
     );
   });
 
   socket.on(MessageControl.ClientMessages.NEW_QUESTION_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {
     getSurveyAdmin(socket, surveyConnectionInfo.surveyId, <string>surveyConnectionInfo.adminPwd,
-      (survey) => survey.resetAnswers()
+      (survey) => {
+        if(VERBOSE_MODE) {
+          console.log(MessageControl.ClientMessages.NEW_QUESTION_EVENT, socket.id) ;
+        }
+        survey.resetAnswers();
+      }
     );
   });
 
   socket.on(MessageControl.ClientMessages.ANSWER_EVENT, (answer: Answer) => {
     getSurvey(socket, answer.surveyId,
-      (survey) => survey.answer(new Answer(answer.surveyId, socket.id, answer.option)));
+      (survey) => {
+        if(VERBOSE_MODE) {
+          console.log(MessageControl.ClientMessages.ANSWER_EVENT, socket.id, answer) ;
+        }
+        survey.answer(new Answer(answer.surveyId, socket.id, answer.option));
+
+      });
   });
 
   socket.on(MessageControl.ClientMessages.DISCONNECT_EVENT, function() {
+    if(VERBOSE_MODE) {
+      console.log(MessageControl.ClientMessages.DISCONNECT_EVENT, socket.id);
+    }
     deleteUser(socket.id);
-    console.log('user disconnected ' + socket.id);
   });
 
   socket.on('error', (err: Error) => {

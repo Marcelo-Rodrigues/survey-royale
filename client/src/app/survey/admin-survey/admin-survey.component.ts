@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SurveyService } from '../../shared/survey.service';
-import { AdminSurveyInfo } from '../../shared/messages/admin-survey-info';
 import { Subscription } from 'rxjs/Subscription';
 import { ActivatedRoute } from '@angular/router';
+import { NewSurveyComponent } from '../new-survey/new-survey.component';
+import { CreatedPublicSurveyInfo } from '../../../../../shared/CreatedPublicSurveyInfo';
+import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
 
 @Component({
   selector: 'app-admin-survey',
@@ -20,9 +22,15 @@ export class AdminSurveyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.routeSubscription = this.route.queryParams.subscribe(params => {
-       this.surveyId = params['surveyId'];
-       this.conectarAdmin(this.surveyId, localStorage.getItem(AdminSurveyComponent.ADM_PASSWORD));
+    this.routeSubscription = this.route.params.subscribe(params => {
+       this.surveyId = params.surveyId;
+       const storageAdmins: {[key: string]: CreatedPublicSurveyInfo} = JSON.parse(localStorage.getItem(NewSurveyComponent.STORAGE_ADMINS));
+      console.log('storageAdmins', storageAdmins, this.surveyId );
+       const surveyADMIN = storageAdmins[this.surveyId];
+
+       console.log('surveyADMIN', surveyADMIN);
+
+       this.conectarAdmin(this.surveyId, surveyADMIN.adminPwd);
     });
 
   }
@@ -33,9 +41,11 @@ export class AdminSurveyComponent implements OnInit, OnDestroy {
       this.adminSubscription = null;
     }
 
-    this.adminSubscription = this.surveyService.adminSurvey(new AdminSurveyInfo(surveyId, password))
+    this.adminSubscription = this.surveyService.adminSurvey(new SurveyConnectionInfo(surveyId, 'admin', password))
       .subscribe(message => {
         console.log(message);
+      }, err => {
+        console.error(err);
       });
   }
 
