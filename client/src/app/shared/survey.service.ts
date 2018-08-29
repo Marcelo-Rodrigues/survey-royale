@@ -10,7 +10,8 @@ import { HttpClient } from '@angular/common/http';
 import { PublicSurveyInfo } from '../../../../shared/PublicSurveyInfo';
 import { SurveyConnectionInfo } from '../../../../shared/SurveyConnectionInfo';
 import { CreatedPublicSurveyInfo } from '../../../../shared/CreatedPublicSurveyInfo';
-
+import { SurveyAnswer } from '../../../../shared/SurveyAnswer';
+import { SurveyOption } from '../../../../shared/SurveyOption';
 
 @Injectable()
 export class SurveyService {
@@ -19,11 +20,11 @@ export class SurveyService {
   private url = 'http://localhost:8090/';
   private socket;
 
-  answer(answer) {
+  answer(surveyId: string, option: SurveyOption) {
      if (!this.socket) {
       throw new Error('cannot use closed socket :(');
      }
-    this.socket.emit('answer', answer);
+    this.socket.emit(MessageControl.ClientMessages.ANSWER_EVENT, new SurveyAnswer(surveyId, option).serialize());
   }
 
   private getSocket() {
@@ -48,7 +49,7 @@ export class SurveyService {
       this.getSocket().on(MessageControl.ServerMessages.SURVEY_INFO_EVENT, (data: CreatedPublicSurveyInfo) => {
         observer.next(new SurveyInfoMessage(data));
       });
-console.log(surveyConnectionInfo,surveyConnectionInfo.serialize());
+console.log(surveyConnectionInfo, surveyConnectionInfo.serialize());
       this.getSocket().emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.serialize());
 
       return () => {
@@ -62,15 +63,15 @@ console.log(surveyConnectionInfo,surveyConnectionInfo.serialize());
   adminSurvey(adminInfo): Observable<Message> {
     return new Observable(observer => {
 
-      this.getSocket().on('newQuestion', (data) => {
+      this.getSocket().on(MessageControl.ServerMessages.RESETED_ANSWER_EVENT, (data) => {
         observer.next(new NewQuestionMessage(data));
       });
 
-      this.getSocket().on('answer', (data) => {
+      this.getSocket().on(MessageControl.ServerMessages.ANSWERS_CHANGE_EVENT, (data) => {
         observer.next(new AnswerMessage(data));
       });
 
-      this.getSocket().emit('adminSurvey', adminInfo);
+      this.getSocket().emit(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, adminInfo);
 
       return () => {
         this.socket.disconnect();

@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { SurveyInfoMessage } from '../../shared/messages/survey-info-message';
 import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
 import { MessageControl } from '../../../../../shared/MessageControl';
+import { SurveyOption } from '../../../../../shared/SurveyOption';
 
 @Component({
   selector: 'app-answer-survey',
@@ -22,7 +23,7 @@ export class AnswerSurveyComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.activateRoute.params.subscribe((param) =>{
+    this.activateRoute.params.subscribe((param) => {
       console.log(param);
        this.connect(param.surveyId);
       });
@@ -65,13 +66,13 @@ console.log(new SurveyConnectionInfo(surveyId, participantName));
   }
 
   ngOnDestroy() {
-    if (this.subscription){
+    if (this.subscription) {
       this.subscription.unsubscribe();
     }
   }
 
-  onOptionChange(newOpion) {
-    this.surveyService.answer(newOpion);
+  onOptionChange(newOption: SurveyOption) {
+    this.surveyService.answer(this.surveyInfo.surveyId, newOption);
   }
 
 }

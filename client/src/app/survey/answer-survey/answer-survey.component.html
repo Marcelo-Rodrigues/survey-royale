@@ -4,7 +4,6 @@
       <td>
           <label class="container">{{option.title}}
             <input type="radio" name="radio"
-            [checked]="idx === 0"
             [value]="option.title"
             (change)="onOptionChange(option)">
             <span class="checkmark"></span>

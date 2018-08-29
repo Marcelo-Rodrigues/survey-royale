@@ -6,9 +6,10 @@ import { Survey } from './Survey';
 import { SurveyConnectionInfo } from '../shared/SurveyConnectionInfo';
 import { Client } from './Client';
 import { MessageControl } from '../shared/MessageControl';
-import { Answer } from '../shared/Answer';
 import { Utils } from './Utils';
 import { PublicSurveyInfo } from '../shared/PublicSurveyInfo';
+import { PublicAnswerInfo } from '../shared/PublicAnswerInfo';
+import { SurveyAnswer } from '../shared/SurveyAnswer';
 
 const app = express();
 const http = require('http').Server(app);
@@ -71,7 +72,7 @@ function createSurvey(survey: PublicSurveyInfo) {
 
 function getSurvey(socket: SocketIO.Socket, surveyId: string, callback: (survey: Survey) => any|void) {
     const survey = surveyServerControl[surveyId];
-   
+
     if (survey) {
       callback(survey);
     } else {
@@ -138,13 +139,13 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
     );
   });
 
-  socket.on(MessageControl.ClientMessages.ANSWER_EVENT, (answer: Answer) => {
+  socket.on(MessageControl.ClientMessages.ANSWER_EVENT, (answer: SurveyAnswer) => {
     getSurvey(socket, answer.surveyId,
       (survey) => {
         if(VERBOSE_MODE) {
-          console.log(MessageControl.ClientMessages.ANSWER_EVENT, socket.id, answer) ;
+          console.log(MessageControl.ClientMessages.ANSWER_EVENT, socket.id, answer, new PublicAnswerInfo(answer.surveyId, socket.id, answer.option)) ;
         }
-        survey.answer(new Answer(answer.surveyId, socket.id, answer.option));
+        survey.answer(new PublicAnswerInfo(answer.surveyId, socket.id, answer.option));
 
       });
   });

@@ -2,7 +2,7 @@ export module MessageControl {
   export class ServerMessages {
     public static RESETED_ANSWER_EVENT = 'resetedAnswer';
     public static CLIENT_DISCONNECTED_EVENT = 'clientDisconnected';
-    public static CLIENT_ANSWERED_EVENT = 'clientAnswered';
+    public static ANSWERS_CHANGE_EVENT = 'anwersChanged';
     public static PARTICIPANT_PENDING_CHANGE_EVENT = 'participantPendingChange';
     public static SURVEY_INFO_EVENT = 'surveyInfo';
   }

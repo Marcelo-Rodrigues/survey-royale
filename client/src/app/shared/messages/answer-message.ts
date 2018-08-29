@@ -1,21 +1,19 @@
 import { Message } from './message';
-import { SurveyAnswer } from './survey-answer';
-import { Participant } from './participant';
+import { PublicAnswerInfo } from '../../../../../shared/PublicAnswerInfo';
+import { PublicClientInfo } from '../../../../../shared/PublicClientInfo';
 
-export class AnswerMessage  implements Message {
+export class AnswerMessage implements Message {
   type = 'answer';
-  public answers: SurveyAnswer[];
-  public pendingParticipants: Participant[];
+  public answers: PublicAnswerInfo[];
+  public pendingParticipants: PublicClientInfo[];
 
-  constructor(data: AnswerMessage) {
+  constructor(data: PublicAnswerInfo[]) {
     this.answers = [];
     this.pendingParticipants = [];
 
     if (data) {
-      Object.values(data.answers).forEach(answer => new SurveyAnswer(answer));
-      data.pendingParticipants.forEach(pendingParticipant =>
-        this.pendingParticipants.push(new Participant(pendingParticipant))
-      );
+      this.answers = Object.values(data).map(answer =>
+        new PublicAnswerInfo(answer.surveyId, answer.participantId, answer.option));
     }
   }
 }

@@ -1,17 +1,17 @@
 import { Client } from './Client';
-import { Answer } from '../shared/Answer';
 import { Utils } from './Utils';
 import { SurveyOption } from '../shared/SurveyOption';
 import { MessageControl } from '../shared/MessageControl';
 import { DisconnectedClient } from '../shared/DisconnectedClient';
 import { CreatedPublicSurveyInfo } from '../shared/CreatedPublicSurveyInfo';
+import { PublicAnswerInfo } from '../shared/PublicAnswerInfo';
 import { Serializable } from '../shared/Serializable';
 import { isArray } from 'util';
 
 export class Survey {
   private _participants: { [key: string]: Client };
   private _admins: { [key: string]: Client };
-  private _answers: { [key: string]: Answer };
+  private _answers: { [key: string]: PublicAnswerInfo };
   private _surveyId: string;
   private _adminPwd: string;
   private _date: Date;
@@ -53,27 +53,22 @@ export class Survey {
     this._admins[admin.participantId] = admin;
   }
 
-  public answer(answer: Answer) {
+  public answer(answer: PublicAnswerInfo) {
     this._answers[answer.participantId] = answer;
-    this.emitToAdmins(MessageControl.ServerMessages.CLIENT_ANSWERED_EVENT,
-      answer);
+    this.emitToAdmins(MessageControl.ServerMessages.ANSWERS_CHANGE_EVENT,
+      Utils.getObjectValues(this._answers));
 
     this.emitToAdmins(MessageControl.ServerMessages.PARTICIPANT_PENDING_CHANGE_EVENT,
       this.getPendingParticipants().map(participant => participant.getPublicInfo()));
   }
 
-  public resetAnswers(notifyParticipants = true, notififyAdmins = true) {
+  public resetAnswers() {
     this._answers = {};
 
-    if (notifyParticipants) {
-      this.emitToParticipants(
-        MessageControl.ServerMessages.RESETED_ANSWER_EVENT
-      );
-    }
-
-    if (notififyAdmins) {
-      this.emitToAdmins(MessageControl.ServerMessages.RESETED_ANSWER_EVENT);
-    }
+    this.emitToParticipants(
+      MessageControl.ServerMessages.RESETED_ANSWER_EVENT
+    );
+    this.emitToAdmins(MessageControl.ServerMessages.RESETED_ANSWER_EVENT);
   }
 
   public isValidAdmin(adminPwd: string) {
@@ -150,11 +145,11 @@ export class Survey {
     let emitFunction: (client: Client) => any;
 
     if(objects) {
-      const serializedObjects = 
+      const serializedObjects =
       isArray(objects) ?
         objects.map(obj => obj.serialize())
         : objects.serialize();
-      
+
         emitFunction = client => client.emit(event, serializedObjects)
 
     } else {

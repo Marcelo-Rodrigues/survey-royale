@@ -76,8 +76,8 @@ export class NewSurveyComponent implements OnInit {
 
   getSurveyUrl() {
     const url = window.location.href;
-    const baseUrl = /^(.*)(\/new)$/g.exec(url)[0];
-    return baseUrl + '/survey/' + this.createdSurvey.surveyId;
+    const baseUrl = /(^.*)(\/new)$/g.exec(url)[1];
+    return baseUrl + '/' + this.createdSurvey.surveyId;
   }
 
   isValid() {
