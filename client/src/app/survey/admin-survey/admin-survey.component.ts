@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { NewSurveyComponent } from '../new-survey/new-survey.component';
 import { CreatedPublicSurveyInfo } from '../../../../../shared/CreatedPublicSurveyInfo';
 import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
+import { PendingParticipantsChangeMessage } from '../../shared/messages/pending-participants-change-message';
+import { MessageControl } from '../../../../../shared/MessageControl';
 
 @Component({
   selector: 'app-admin-survey',
@@ -42,11 +44,19 @@ export class AdminSurveyComponent implements OnInit, OnDestroy {
     }
 
     this.adminSubscription = this.surveyService.adminSurvey(new SurveyConnectionInfo(surveyId, 'admin', password))
-      .subscribe(message => {
-        console.log(message);
+      .subscribe(msg => {
+        switch(msg.type) {
+          case MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT:
+            this.pendingParticipantsChange(msg as PendingParticipantsChangeMessage);
+            break;
+        }
       }, err => {
         console.error(err);
       });
+  }
+
+  pendingParticipantsChange(pendingParticipants: PendingParticipantsChangeMessage) {
+    this.pendingParticipants = pendingParticipants;
   }
 
   ngOnDestroy(): void {

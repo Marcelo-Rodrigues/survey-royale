@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../dist",
+    "baseUrl": "./",
+    "module": "es2015",
+    "strict": false,
+    "sourceMap": true                        /* Generates corresponding '.map' file. */
+  },
+  "exclude": [
+      "node_modules",
+      "**/*.spec.ts",
+      "spec"
+  ]
+}

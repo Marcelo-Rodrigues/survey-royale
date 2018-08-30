@@ -7,6 +7,7 @@ import { SurveyInfoMessage } from '../../shared/messages/survey-info-message';
 import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
 import { MessageControl } from '../../../../../shared/MessageControl';
 import { SurveyOption } from '../../../../../shared/SurveyOption';
+import { PendingParticipantsChangeMessage } from '../../shared/messages/pending-participants-change-message';
 
 @Component({
   selector: 'app-answer-survey',
@@ -18,6 +19,7 @@ export class AnswerSurveyComponent implements OnInit, OnDestroy {
   pendingAnswer = false;
   subscription: Subscription;
   surveyInfo: SurveyInfoMessage;
+  pendingParticipants: PendingParticipantsChangeMessage;
 
   constructor(private activateRoute: ActivatedRoute, private router: Router, private surveyService: SurveyService) { }
 
@@ -45,9 +47,9 @@ console.log(new SurveyConnectionInfo(surveyId, participantName));
         .subscribe((msg) => {
           switch (msg.type) {
             case MessageControl.ServerMessages.SURVEY_INFO_EVENT:
-              this.newSurveyInfo(<SurveyInfoMessage>msg);
+              this.newSurveyInfo(msg as SurveyInfoMessage);
               break;
-            case MessageControl.ServerMessages.RESETED_ANSWER_EVENT:
+            case MessageControl.ServerMessages.RESETED_ANSWERS_EVENT:
               this.resetAnswer();
               break;
           }

@@ -1,6 +1,6 @@
 <table>
   <caption><h1>{{surveyInfo?.title}}</h1></caption>
-  <tr *ngFor="let option of surveyInfo?.options; let idx = index">
+  <tr *ngFor="let option of surveyInfo?.options">
       <td>
           <label class="container">{{option.title}}
             <input type="radio" name="radio"

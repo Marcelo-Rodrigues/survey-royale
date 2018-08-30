@@ -1,11 +1,11 @@
 import { Client } from './Client';
 import { Utils } from './Utils';
-import { SurveyOption } from '../shared/SurveyOption';
-import { MessageControl } from '../shared/MessageControl';
-import { DisconnectedClient } from '../shared/DisconnectedClient';
-import { CreatedPublicSurveyInfo } from '../shared/CreatedPublicSurveyInfo';
-import { PublicAnswerInfo } from '../shared/PublicAnswerInfo';
-import { Serializable } from '../shared/Serializable';
+import { SurveyOption } from '../../shared/SurveyOption';
+import { MessageControl } from '../../shared/MessageControl';
+import { DisconnectedClient } from '../../shared/DisconnectedClient';
+import { CreatedPublicSurveyInfo } from '../../shared/CreatedPublicSurveyInfo';
+import { PublicAnswerInfo } from '../../shared/PublicAnswerInfo';
+import { Serializable } from '../../shared/Serializable';
 import { isArray } from 'util';
 
 export class Survey {
@@ -55,10 +55,10 @@ export class Survey {
 
   public answer(answer: PublicAnswerInfo) {
     this._answers[answer.participantId] = answer;
-    this.emitToAdmins(MessageControl.ServerMessages.ANSWERS_CHANGE_EVENT,
+    this.emitToAdmins(MessageControl.ServerMessages.ANSWERS_CHANGED_EVENT,
       Utils.getObjectValues(this._answers));
 
-    this.emitToAdmins(MessageControl.ServerMessages.PARTICIPANT_PENDING_CHANGE_EVENT,
+    this.emitToAdmins(MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT,
       this.getPendingParticipants().map(participant => participant.getPublicInfo()));
   }
 
@@ -66,9 +66,9 @@ export class Survey {
     this._answers = {};
 
     this.emitToParticipants(
-      MessageControl.ServerMessages.RESETED_ANSWER_EVENT
+      MessageControl.ServerMessages.RESETED_ANSWERS_EVENT
     );
-    this.emitToAdmins(MessageControl.ServerMessages.RESETED_ANSWER_EVENT);
+    this.emitToAdmins(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT);
   }
 
   public isValidAdmin(adminPwd: string) {

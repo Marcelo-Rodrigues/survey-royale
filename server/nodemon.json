@@ -2,7 +2,7 @@
   "signal": "SIGHUP",
   "ignore": [
     "*.test.js",
-    "dist/*",
-    "node_modules/*"
+    "dist/**",
+    "node_modules/**"
   ]
 }

@@ -1,4 +1,4 @@
-import { PublicClientInfo } from '../shared/PublicClientInfo';
+import { PublicClientInfo } from '../../shared/PublicClientInfo';
 
 export class Client {
   constructor(private _socket: SocketIO.Socket, private _name?: string) {  }
@@ -6,9 +6,9 @@ export class Client {
   getPublicInfo() {
     return new PublicClientInfo(this.participantId, <string>this.name);
   }
-  
+
   emit(event: string, ...args: any[]) {
-    this._socket.emit(event, args);
+    this._socket.emit(event, ...args);
   }
 
   get participantId() {

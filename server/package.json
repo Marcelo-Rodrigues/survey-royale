@@ -7,8 +7,9 @@
     "start": "node index.js",
     "tsc": "tsc",
     "serve": "npm run build:live",
-    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./index.ts",
-    "test": "node_modules/nodemon/bin/nodemon.js -w dist ./node_modules/.bin/jasmine — config=jasmine.json",
+    "deploy": "node_modules/.bin/tsc --project src/tsconfig.app.json",
+    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "test": "jasmine-ts \"src/**/*.spec.ts\"",
     "watch": "node_modules/concurrently/index.js -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"node_modules/nodemon/bin/nodemon.js --inspect --delay 500ms dist/app/index.js\""
   },
   "keywords": [
@@ -17,19 +18,22 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@types/express": "^4.16.0",
     "express": "^4.16.2",
     "http": "0.0.0",
     "nedb": "^1.8.0",
-    "nodemon": "^1.18.3",
     "path": "^0.12.7",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
+    "@types/express": "^4.16.0",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.9.2",
     "@types/socket.io": "^1.4.38",
+    "concurrently": "^4.0.1",
     "jasmine": "^3.2.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "jasmine-ts": "^0.2.1",
+    "nodemon": "^1.18.3",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.1"
   }

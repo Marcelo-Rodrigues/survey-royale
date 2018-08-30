@@ -1,15 +1,16 @@
-import express = require('express');
+import express from 'express';
 
-import bodyParser = require('body-parser');
-import path = require('path');
+import bodyParser from 'body-parser';
+import path from 'path';
 import { Survey } from './Survey';
-import { SurveyConnectionInfo } from '../shared/SurveyConnectionInfo';
+import { SurveyConnectionInfo } from '../../shared/SurveyConnectionInfo';
 import { Client } from './Client';
-import { MessageControl } from '../shared/MessageControl';
+import { MessageControl } from '../../shared/MessageControl';
 import { Utils } from './Utils';
-import { PublicSurveyInfo } from '../shared/PublicSurveyInfo';
-import { PublicAnswerInfo } from '../shared/PublicAnswerInfo';
-import { SurveyAnswer } from '../shared/SurveyAnswer';
+import { PublicSurveyInfo } from '../../shared/PublicSurveyInfo';
+import { PublicAnswerInfo } from '../../shared/PublicAnswerInfo';
+import { SurveyAnswer } from '../../shared/SurveyAnswer';
+import { inspect } from 'util'
 
 const app = express();
 const http = require('http').Server(app);
@@ -18,6 +19,8 @@ const socketIoServer = require('socket.io')(http);
 const surveyServerControl: { [key: string]: Survey} = {};
 
 const VERBOSE_MODE = true;
+
+const FRONT_PATH = '../client';
 
 app.use(bodyParser.json());
 
@@ -30,8 +33,6 @@ app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Credentials', 'true');
   next();
 });
-
-const FRONT_PATH = '../client/dist';
 
 app.set('port', process.env.PORT || 8090);
 app.use(express.static(path.resolve(FRONT_PATH)));
@@ -60,7 +61,7 @@ app.get('/api/survey/:id', function(req, res) {
 
 if(VERBOSE_MODE) {
   app.get('/api/dump', function(req, res) {
-    res.send(surveyServerControl);
+    res.send(inspect(surveyServerControl));
   });
 }
 

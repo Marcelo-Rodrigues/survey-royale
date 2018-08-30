@@ -1,15 +1,13 @@
 import { Message } from './message';
 import { PublicAnswerInfo } from '../../../../../shared/PublicAnswerInfo';
-import { PublicClientInfo } from '../../../../../shared/PublicClientInfo';
+import { MessageControl } from '../../../../../shared/MessageControl';
 
-export class AnswerMessage implements Message {
-  type = 'answer';
+export class AnswersChangeMessage implements Message {
+  type = MessageControl.ServerMessages.ANSWERS_CHANGED_EVENT;
   public answers: PublicAnswerInfo[];
-  public pendingParticipants: PublicClientInfo[];
 
   constructor(data: PublicAnswerInfo[]) {
     this.answers = [];
-    this.pendingParticipants = [];
 
     if (data) {
       this.answers = Object.values(data).map(answer =>
