@@ -2,13 +2,14 @@
   "name": "survey-royale",
   "version": "1.0.0",
   "description": "Survey onlinepara perguntas consecutivas em equipe",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
+    "start": "node server/src/index.js",
     "install": "cd client && npm install && cd ../server && npm install",
     "deploy": "npm run build-client && npm run build-server",
-    "postdeploy": "cp -r server/dist . && cp -r client/dist ./dist",
-    "build-server": "cd server && npm run deploy && cd..",
-    "build-client":"cd client && npm run deploy && cd ..",
+    "postdeploy": "cp -r server/dist . && cp -r client/dist ./dist && mv dist/dist dist/client && cp package.json dist",
+    "build-server": "cd server && npm run deploy && cd ..",
+    "build-client": "cd client && npm run deploy && cd ..",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

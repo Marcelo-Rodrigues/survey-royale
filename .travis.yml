@@ -1,5 +1,8 @@
 language: node_js
+node_js: "6"
+branches:
+  only:
+  - master
 script: npm run deploy
-node_js:
-  - "iojs"
-  - "6"
+before_deploy:
+  - cd dist

@@ -7,7 +7,6 @@ import { SurveyInfoMessage } from '../../shared/messages/survey-info-message';
 import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
 import { MessageControl } from '../../../../../shared/MessageControl';
 import { SurveyOption } from '../../../../../shared/SurveyOption';
-import { PendingParticipantsChangeMessage } from '../../shared/messages/pending-participants-change-message';
 
 @Component({
   selector: 'app-answer-survey',
@@ -19,7 +18,6 @@ export class AnswerSurveyComponent implements OnInit, OnDestroy {
   pendingAnswer = false;
   subscription: Subscription;
   surveyInfo: SurveyInfoMessage;
-  pendingParticipants: PendingParticipantsChangeMessage;
 
   constructor(private activateRoute: ActivatedRoute, private router: Router, private surveyService: SurveyService) { }
 

@@ -4,7 +4,7 @@
   "description": "Web API e recursos estaticos do programa Survey Royale",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
     "tsc": "tsc",
     "serve": "npm run build:live",
     "deploy": "node_modules/.bin/tsc --project src/tsconfig.app.json",

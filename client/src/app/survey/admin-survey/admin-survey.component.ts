@@ -17,6 +17,7 @@ export class AdminSurveyComponent implements OnInit, OnDestroy {
   public static ADM_PASSWORD = 'adm_password';
   exibirResultado = true;
   surveyId: string;
+  pendingParticipants: PendingParticipantsChangeMessage;
   routeSubscription: Subscription;
   adminSubscription: Subscription;
 
@@ -45,7 +46,7 @@ export class AdminSurveyComponent implements OnInit, OnDestroy {
 
     this.adminSubscription = this.surveyService.adminSurvey(new SurveyConnectionInfo(surveyId, 'admin', password))
       .subscribe(msg => {
-        switch(msg.type) {
+        switch (msg.type) {
           case MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT:
             this.pendingParticipantsChange(msg as PendingParticipantsChangeMessage);
             break;

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import * as io from 'socket.io-client';
 import { Observable } from 'rxjs/Observable';
 import { ResetedAnswersMessage } from './messages/reseted-answers-message';
 import { Message } from './messages/message';
@@ -13,11 +12,12 @@ import { CreatedPublicSurveyInfo } from '../../../../shared/CreatedPublicSurveyI
 import { SurveyAnswer } from '../../../../shared/SurveyAnswer';
 import { SurveyOption } from '../../../../shared/SurveyOption';
 import { PendingParticipantsChangeMessage } from './messages/pending-participants-change-message';
+import { SocketIoService } from './socket-io/socket-io.service';
+
 @Injectable()
 export class SurveyService {
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private socketService: SocketIoService) { }
 
-  private url = 'http://localhost:8090/';
   private socket;
 
   answer(surveyId: string, option: SurveyOption) {
@@ -27,30 +27,23 @@ export class SurveyService {
     this.socket.emit(MessageControl.ClientMessages.ANSWER_EVENT, new SurveyAnswer(surveyId, option).serialize());
   }
 
-  private getSocket() {
-    if (!this.socket) {
-      this.socket = io(this.url);
-    }
-
-    return this.socket;
-  }
 
   createSurvey(survey: PublicSurveyInfo) {
-    return this.http.post<CreatedPublicSurveyInfo>(`${this.url}api/survey`, survey.serialize());
+    return this.http.post<CreatedPublicSurveyInfo>(`${this.socketService.url}api/survey`, survey.serialize());
   }
 
   enterSurvey(surveyConnectionInfo: SurveyConnectionInfo): Observable<Message> {
     return new Observable(observer => {
 
-      this.getSocket().on(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT, (data) => {
+      this.socketService.socket.on(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT, (data) => {
         observer.next(new ResetedAnswersMessage());
       });
 
-      this.getSocket().on(MessageControl.ServerMessages.SURVEY_INFO_EVENT, (data: CreatedPublicSurveyInfo) => {
+      this.socketService.socket.on(MessageControl.ServerMessages.SURVEY_INFO_EVENT, (data: CreatedPublicSurveyInfo) => {
         observer.next(new SurveyInfoMessage(data));
       });
 console.log(surveyConnectionInfo, surveyConnectionInfo.serialize());
-      this.getSocket().emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.serialize());
+      this.socketService.socket.emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.serialize());
 
       return () => {
         this.socket.disconnect();
@@ -63,19 +56,19 @@ console.log(surveyConnectionInfo, surveyConnectionInfo.serialize());
   adminSurvey(adminInfo): Observable<Message> {
     return new Observable(observer => {
 
-      this.getSocket().on(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT, (data) => {
+      this.socketService.socket.on(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT, (data) => {
         observer.next(new ResetedAnswersMessage());
       });
 
-      this.getSocket().on(MessageControl.ServerMessages.ANSWERS_CHANGED_EVENT, (data) => {
+      this.socketService.socket.on(MessageControl.ServerMessages.ANSWERS_CHANGED_EVENT, (data) => {
         observer.next(new AnswersChangeMessage(data));
       });
 
-      this.getSocket().on(MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT, (data) => {
+      this.socketService.socket.on(MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT, (data) => {
         observer.next(new PendingParticipantsChangeMessage(data));
       });
 
-      this.getSocket().emit(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, adminInfo);
+      this.socketService.socket.emit(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, adminInfo);
 
       return () => {
         this.socket.disconnect();
