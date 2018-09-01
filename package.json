@@ -4,6 +4,7 @@
   "description": "Survey onlinepara perguntas consecutivas em equipe",
   "main": "index.js",
   "scripts": {
+    "install": "cd client && npm install && cd ../server && npm install",
     "deploy": "npm run build-client && npm run build-server",
     "postdeploy": "cp -r server/dist . && cp -r client/dist ./dist",
     "build-server": "cd server && npm run deploy && cd..",
