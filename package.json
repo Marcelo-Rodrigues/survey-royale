@@ -4,6 +4,10 @@
   "description": "Survey onlinepara perguntas consecutivas em equipe",
   "main": "index.js",
   "scripts": {
+    "deploy": "npm run build-client && npm run build-server",
+    "postdeploy": "cp -r server/dist . && cp -r client/dist ./dist",
+    "build-server": "cd server && npm run deploy && cd..",
+    "build-client":"cd client && npm run deploy && cd ..",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
