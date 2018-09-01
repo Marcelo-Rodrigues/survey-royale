@@ -1,9 +1,9 @@
+import { environment } from '../../../environments/environment';
+
 export class SocketIoConfig {
   constructor(
     public url: string,
     public options?: any) { }
-
-    static SOCKET_IO_CONFIG_DEFAULT() {
-      return new SocketIoConfig('http://localhost:8090/');
-    }
 }
+
+export const SOCKET_IO_CONFIG_DEFAULT = new SocketIoConfig(environment.apiBase);

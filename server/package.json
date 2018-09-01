@@ -7,8 +7,8 @@
     "start": "node src/index.js",
     "tsc": "tsc",
     "serve": "npm run build:live",
-    "deploy": "node_modules/.bin/tsc --project src/tsconfig.app.json",
-    "build:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
+    "deploy": "node_modules/.bin/tsc --project src/tsconfig.app.json && cp -r node_modules dist/server/src/",
+    "build:live": "NODE_ENV=development nodemon --exec ./node_modules/.bin/ts-node -- ./src/index.ts",
     "test": "jasmine-ts \"src/**/*.spec.ts\"",
     "watch": "node_modules/concurrently/index.js -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"node_modules/nodemon/bin/nodemon.js --inspect --delay 500ms dist/app/index.js\""
   },
@@ -29,6 +29,7 @@
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.9.2",
     "@types/socket.io": "^1.4.38",
+    "colors": "^1.3.2",
     "concurrently": "^4.0.1",
     "jasmine": "^3.2.0",
     "jasmine-spec-reporter": "^4.2.1",

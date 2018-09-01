@@ -3,13 +3,17 @@
   "compilerOptions": {
     "outDir": "../dist",
     "baseUrl": "./",
-    "module": "es2015",
+    "module": "commonjs",
     "strict": false,
-    "sourceMap": true                        /* Generates corresponding '.map' file. */
+    "sourceMap": false,                        /* Generates corresponding '.map' file. */
+    "experimentalDecorators": true
   },
   "exclude": [
-      "node_modules",
       "**/*.spec.ts",
       "spec"
+  ],
+  "include": [
+    "node_modules",
+    "**/*.ts"
   ]
 }

@@ -18,13 +18,8 @@ import { SocketIoService } from './socket-io/socket-io.service';
 export class SurveyService {
   constructor(private http: HttpClient, private socketService: SocketIoService) { }
 
-  private socket;
-
   answer(surveyId: string, option: SurveyOption) {
-     if (!this.socket) {
-      throw new Error('cannot use closed socket :(');
-     }
-    this.socket.emit(MessageControl.ClientMessages.ANSWER_EVENT, new SurveyAnswer(surveyId, option).serialize());
+    this.socketService.socket.emit(MessageControl.ClientMessages.ANSWER_EVENT, new SurveyAnswer(surveyId, option).serialize());
   }
 
 
@@ -46,8 +41,8 @@ console.log(surveyConnectionInfo, surveyConnectionInfo.serialize());
       this.socketService.socket.emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.serialize());
 
       return () => {
-        this.socket.disconnect();
-        this.socket = null;
+        // this.socket.disconnect();
+        // this.socket = null;
       };
     });
   }
@@ -71,8 +66,8 @@ console.log(surveyConnectionInfo, surveyConnectionInfo.serialize());
       this.socketService.socket.emit(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, adminInfo);
 
       return () => {
-        this.socket.disconnect();
-        this.socket = null;
+        // this.socket.disconnect();
+        // this.socket = null;
       };
     });
   }

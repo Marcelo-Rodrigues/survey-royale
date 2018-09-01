@@ -1,6 +1,7 @@
 import express from 'express';
 
 import bodyParser from 'body-parser';
+const colors = require('colors');
 import path from 'path';
 import { Survey } from './Survey';
 import { SurveyConnectionInfo } from '../../shared/SurveyConnectionInfo';
@@ -18,9 +19,18 @@ const socketIoServer = require('socket.io')(http);
 
 const surveyServerControl: { [key: string]: Survey} = {};
 
-const VERBOSE_MODE = true;
+const FRONT_DEV_URL = 'http://localhost:4200'
+const DEVELOPMENT_MODE = (process.env.NODE_ENV==='development');
 
-const FRONT_PATH = '../client';
+const FRONT_PATH = '../../client';
+
+colors.setTheme({
+  event: ['black','bgGreen'],
+  eventRed: ['black','bgRed'],
+  time: ['black','bgWhite'],
+  link: 'blue',
+  error: 'red'
+});
 
 app.use(bodyParser.json());
 
@@ -35,13 +45,16 @@ app.use(function(req, res, next) {
 });
 
 app.set('port', process.env.PORT || 8090);
-app.use(express.static(path.resolve(FRONT_PATH)));
+
+if(!DEVELOPMENT_MODE) {
+  app.use(express.static(path.resolve(FRONT_PATH)));
+}
 
 app.post('/api/survey', (req, res) => {
   const survey: PublicSurveyInfo = req.body;
   res.send(createSurvey(survey).getAdminPublicSurveyInfo().serialize());
-  if(VERBOSE_MODE) {
-    console.log('[post] /api/survey:', survey);
+  if(DEVELOPMENT_MODE) {
+    notificarEventoConsole(colors.event('[post]'),'/api/survey:', survey);
   }
 });
 
@@ -54,12 +67,12 @@ app.get('/api/survey/:id', function(req, res) {
   } else {
     res.send();
   }
-  if(VERBOSE_MODE) {
-    console.log('[get] /api/survey/' + surveyId);
+  if(DEVELOPMENT_MODE) {
+    notificarEventoConsole(colors.green('[get]'),'/api/survey/' + surveyId);
   }
 });
 
-if(VERBOSE_MODE) {
+if(DEVELOPMENT_MODE) {
   app.get('/api/dump', function(req, res) {
     res.send(inspect(surveyServerControl));
   });
@@ -93,22 +106,22 @@ function getSurveyAdmin(socket: SocketIO.Socket, surveyId: string, adminPwd: str
 }
 
 socketIoServer.on('connection', (socket: SocketIO.Socket) => {
-  if(VERBOSE_MODE) {
-    console.log('user connected', socket.id);
+  if(DEVELOPMENT_MODE) {
+    notificarEventoConsole('user', socket.id, colors.event('connected'));
   }
 
   socket.on(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {
-    if(VERBOSE_MODE) {
-      console.log(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo) ;
+    if(DEVELOPMENT_MODE) {
+      notificarEventoConsole(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo) ;
     }
         getSurvey(socket, surveyConnectionInfo.surveyId,
           (survey) => {
-            if(VERBOSE_MODE) {
+            if(DEVELOPMENT_MODE) {
               console.log(survey) ;
             }
             survey.addParticipant(new Client(socket, surveyConnectionInfo.participantName));
             const response = survey.getPublicSurveyInfo().serialize();
-            if(VERBOSE_MODE) {
+            if(DEVELOPMENT_MODE) {
               console.log(MessageControl.ServerMessages.SURVEY_INFO_EVENT, response) ;
             }
             socket.emit(MessageControl.ServerMessages.SURVEY_INFO_EVENT, response);
@@ -116,13 +129,13 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
     });
 
   socket.on(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {
-    if(VERBOSE_MODE) {
-      console.log(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, socket.id, surveyConnectionInfo.surveyId, <string>surveyConnectionInfo.adminPwd) ;
+    if(DEVELOPMENT_MODE) {
+      notificarEventoConsole(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, socket.id, surveyConnectionInfo.surveyId, <string>surveyConnectionInfo.adminPwd) ;
     }
     getSurveyAdmin(socket, surveyConnectionInfo.surveyId, <string>surveyConnectionInfo.adminPwd,
       (survey) => {
-        if(VERBOSE_MODE) {
-          console.log(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, socket.id) ;
+        if(DEVELOPMENT_MODE) {
+          notificarEventoConsole(MessageControl.ClientMessages.ADMINISTRATE_SURVEY_EVENT, socket.id) ;
         }
         survey.addAdmin(new Client(socket));
       }
@@ -132,8 +145,8 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
   socket.on(MessageControl.ClientMessages.NEW_QUESTION_EVENT, (surveyConnectionInfo: SurveyConnectionInfo) => {
     getSurveyAdmin(socket, surveyConnectionInfo.surveyId, <string>surveyConnectionInfo.adminPwd,
       (survey) => {
-        if(VERBOSE_MODE) {
-          console.log(MessageControl.ClientMessages.NEW_QUESTION_EVENT, socket.id) ;
+        if(DEVELOPMENT_MODE) {
+          notificarEventoConsole(MessageControl.ClientMessages.NEW_QUESTION_EVENT, socket.id) ;
         }
         survey.resetAnswers();
       }
@@ -143,8 +156,8 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
   socket.on(MessageControl.ClientMessages.ANSWER_EVENT, (answer: SurveyAnswer) => {
     getSurvey(socket, answer.surveyId,
       (survey) => {
-        if(VERBOSE_MODE) {
-          console.log(MessageControl.ClientMessages.ANSWER_EVENT, socket.id, answer, new PublicAnswerInfo(answer.surveyId, socket.id, answer.option)) ;
+        if(DEVELOPMENT_MODE) {
+          notificarEventoConsole(colors.green(MessageControl.ClientMessages.ANSWER_EVENT), socket.id, answer, new PublicAnswerInfo(answer.surveyId, socket.id, answer.option)) ;
         }
         survey.answer(new PublicAnswerInfo(answer.surveyId, socket.id, answer.option));
 
@@ -152,27 +165,39 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
   });
 
   socket.on(MessageControl.ClientMessages.DISCONNECT_EVENT, function() {
-    if(VERBOSE_MODE) {
-      console.log(MessageControl.ClientMessages.DISCONNECT_EVENT, socket.id);
+    if(DEVELOPMENT_MODE) {
+      notificarEventoConsole('user', socket.id, colors.event('disconnected'));
     }
     deleteUser(socket.id);
   });
 
   socket.on('error', (err: Error) => {
-    console.error(err);
+    notificarEventoConsole(colors.bgRed('Falha:'),colors.red(err));
   });
 });
+
+function notificarEventoConsole(... evento: any[]) {
+  console.log(colors.time('['+new Date().toISOString()+']'),... evento);
+}
 
 function deleteUser(userId: string) {
   Utils.getObjectValues<Survey>(surveyServerControl)
   .forEach((survey) => survey.removeAll(userId));
 }
 
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(FRONT_PATH, 'index.html'));
-});
+if(DEVELOPMENT_MODE) {
+  console.log(colors.yellow('Modo de desenvolvimento - redirecionando o front para ') + colors.link(FRONT_DEV_URL));
+
+  app.get('*', (req, res) => {
+    res.redirect(FRONT_DEV_URL);
+  });
+} else {
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(FRONT_PATH, 'index.html'));
+  });
+}
 
 http.listen(app.get('port'), () => {
-  console.log('Survey Royale Server iniciado na porta ', app.get('port'));
-  console.log(`http://localhost:${app.get('port')}/`);
+  notificarEventoConsole('Survey Royale Server iniciado na porta', app.get('port')+':',
+    colors.link(`http://localhost:${app.get('port')}/`));
 });

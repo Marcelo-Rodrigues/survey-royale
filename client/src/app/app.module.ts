@@ -14,7 +14,7 @@ import { LoginComponent } from './survey/login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { OptionCardComponent } from './shared/components/option-card/option-card.component';
 import { SOCKET_CONFIG_TOKEN, SocketIoService } from './shared/socket-io/socket-io.service';
-import { SocketIoConfig } from './shared/socket-io/socket-io-config';
+import { SOCKET_IO_CONFIG_DEFAULT } from './shared/socket-io/socket-io-config';
 
 @NgModule({
   declarations: [
@@ -37,7 +37,7 @@ import { SocketIoConfig } from './shared/socket-io/socket-io-config';
     SurveyService,
     {
       provide: SOCKET_CONFIG_TOKEN,
-      useValue: SocketIoConfig.SOCKET_IO_CONFIG_DEFAULT
+      useValue: SOCKET_IO_CONFIG_DEFAULT
     },
     SocketIoService
   ],
