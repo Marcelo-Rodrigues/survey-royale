@@ -4,6 +4,9 @@
   "description": "Survey onlinepara perguntas consecutivas em equipe",
   "main": "server/index.js",
   "scripts": {
+    "serve":"concurrently --names \"Client,Server\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run serve-client\" \"npm run serve-server\"",
+    "serve-client": "cd client && npm run serve",
+    "serve-server": "cd server && npm run serve",
     "start": "cd server/src && node index.js",
     "install": "cd client && npm install && cd ../server && npm install",
     "deploy": "npm run build-client && npm run build-server",
@@ -16,5 +19,8 @@
     "survey"
   ],
   "author": "Marcelo Rodrigues",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^4.0.1"
+  }
 }

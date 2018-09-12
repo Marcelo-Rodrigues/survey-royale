@@ -10,6 +10,7 @@ import { MessageControl } from '../../shared/MessageControl';
 import { Utils } from './Utils';
 import { PublicSurveyInfo } from '../../shared/PublicSurveyInfo';
 import { PublicAnswerInfo } from '../../shared/PublicAnswerInfo';
+import { LockedSurveyState } from '../../shared/LockedSurveyState';
 import { SurveyAnswer } from '../../shared/SurveyAnswer';
 import { inspect } from 'util'
 
@@ -52,7 +53,7 @@ if(!DEVELOPMENT_MODE) {
 
 app.post('/api/survey', (req, res) => {
   const survey: PublicSurveyInfo = req.body;
-  res.send(createSurvey(survey).getAdminPublicSurveyInfo().serialize());
+  res.send(createSurvey(survey).getAdminPublicSurveyInfo().toJSON());
   if(DEVELOPMENT_MODE) {
     notificarEventoConsole(colors.event('[post]'),'/api/survey:', survey);
   }
@@ -63,7 +64,7 @@ app.get('/api/survey/:id', function(req, res) {
   const survey = surveyServerControl[surveyId];
 
   if (survey) {
-    res.send(survey.getPublicSurveyInfo().serialize());
+    res.send(survey.getPublicSurveyInfo().toJSON());
   } else {
     res.send();
   }
@@ -120,7 +121,7 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
               console.log(survey) ;
             }
             survey.addParticipant(new Client(socket, surveyConnectionInfo.participantName));
-            const response = survey.getPublicSurveyInfo().serialize();
+            const response = survey.getPublicSurveyInfo().toJSON();
             if(DEVELOPMENT_MODE) {
               console.log(MessageControl.ServerMessages.SURVEY_INFO_EVENT, response) ;
             }
@@ -164,9 +165,24 @@ socketIoServer.on('connection', (socket: SocketIO.Socket) => {
       });
   });
 
-  socket.on(MessageControl.ClientMessages.DISCONNECT_EVENT, function() {
+  socket.on(MessageControl.ClientMessages.DISCONNECT_EVENT, () => {
     if(DEVELOPMENT_MODE) {
-      notificarEventoConsole('user', socket.id, colors.event('disconnected'));
+      notificarEventoConsole('user', socket.id, colors.eventRed('disconnected'));
+    }
+    deleteUser(socket.id);
+  });
+
+  socket.on(MessageControl.ClientMessages.LOCK_SURVEY_EVENT, (lockedState: LockedSurveyState) => {
+    getSurveyAdmin(socket, lockedState.surveyId, lockedState.adminPwd as string,
+      (survey) => {
+        if(DEVELOPMENT_MODE) {
+          notificarEventoConsole(MessageControl.ClientMessages.LOCK_SURVEY_EVENT, lockedState.locked, socket.id) ;
+        }
+        survey.setLockSurveyState(lockedState);
+      }
+    );
+    if(DEVELOPMENT_MODE) {
+      notificarEventoConsole('user', socket.id, colors.eventRed('disconnected'));
     }
     deleteUser(socket.id);
   });

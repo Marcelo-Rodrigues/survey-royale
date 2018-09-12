@@ -5,6 +5,7 @@ export module MessageControl {
     public static ANSWERS_CHANGED_EVENT = 'anwersChanged';
     public static PENDING_PARTICIPANTS_CHANGED_EVENT = 'participantPendingChange';
     public static SURVEY_INFO_EVENT = 'surveyInfo';
+    public static LOCKED_SURVEY_STATE_CHANGED_EVENT = 'lockedSurveyChangedEvent';
   }
 
   export class ServerErrorDescription {
@@ -18,6 +19,7 @@ export module MessageControl {
   }
 
   export class ClientMessages {
+    public static LOCK_SURVEY_EVENT = 'lockSurvey';
     public static ENTER_SURVEY_EVENT = 'enterSurvey';
     public static ADMINISTRATE_SURVEY_EVENT = 'adminSurvey';
     public static RESET_ANSWER_EVENT = 'resetAnswer';

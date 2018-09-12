@@ -43,8 +43,6 @@
       </td>
     </tr>
   </table>
-
-
 </form>
 
 <table class="form" *ngIf="createdSurvey">
@@ -58,8 +56,9 @@
   </tr>
   <tr>
     <td>
-      <input #surveyLinkInput type="text" [value]="getSurveyUrl()" class="surveyLink">
-      <button (click)="copyInputMessage(surveyLinkInput)" value="click to copy" >Copiar</button>
+      <!-- <input #surveyLinkInput type="text" [value]="getSurveyUrl()" class="surveyLink">
+      <app-button (click)="copyInputMessage(surveyLinkInput)" value="click to copy" >Copiar</app-button> -->
+      <app-survey-access-info [createdSurvey]="createdSurvey"></app-survey-access-info>
     </td>
   </tr>
   <tr>

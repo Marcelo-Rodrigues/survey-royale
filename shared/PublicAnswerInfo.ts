@@ -8,7 +8,7 @@ export class PublicAnswerInfo implements Serializable {
     this.date = new Date();
   }
 
-  serialize() {
+  toJSON() {
     return {
       participantId: this.participantId,
       option: this.option,

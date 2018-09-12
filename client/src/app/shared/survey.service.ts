@@ -11,6 +11,7 @@ import { SurveyConnectionInfo } from '../../../../shared/SurveyConnectionInfo';
 import { CreatedPublicSurveyInfo } from '../../../../shared/CreatedPublicSurveyInfo';
 import { SurveyAnswer } from '../../../../shared/SurveyAnswer';
 import { SurveyOption } from '../../../../shared/SurveyOption';
+import { LockedSurveyState } from '../../../../shared/LockedSurveyState';
 import { PendingParticipantsChangeMessage } from './messages/pending-participants-change-message';
 import { SocketIoService } from './socket-io/socket-io.service';
 
@@ -18,13 +19,44 @@ import { SocketIoService } from './socket-io/socket-io.service';
 export class SurveyService {
   constructor(private http: HttpClient, private socketService: SocketIoService) { }
 
-  answer(surveyId: string, option: SurveyOption) {
-    this.socketService.socket.emit(MessageControl.ClientMessages.ANSWER_EVENT, new SurveyAnswer(surveyId, option).serialize());
+  resetAnswers() {
+    this.socketService.socket.emit(MessageControl.ClientMessages.RESET_ANSWER_EVENT);
   }
 
+  answer(surveyId: string, option: SurveyOption) {
+    this.socketService.socket.emit(MessageControl.ClientMessages.ANSWER_EVENT, new SurveyAnswer(surveyId, option).toJSON());
+  }
 
   createSurvey(survey: PublicSurveyInfo) {
-    return this.http.post<CreatedPublicSurveyInfo>(`${this.socketService.url}api/survey`, survey.serialize());
+    return this.http.post<CreatedPublicSurveyInfo>(`${this.socketService.url}api/survey`, survey.toJSON());
+  }
+
+  getResetedAnswerEvent(): Observable<ResetedAnswersMessage>  {
+    return this.createObservable(
+      MessageControl.ServerMessages.RESETED_ANSWERS_EVENT,
+      (data) => new ResetedAnswersMessage());
+  }
+
+  subscribe(): Observable<ResetedAnswersMessage>  {
+    return this.createObservable(
+      MessageControl.ServerMessages.RESETED_ANSWERS_EVENT,
+      (data) => new ResetedAnswersMessage());
+  }
+
+  createObservable<T>(event, deSerializeFunction: (data: T) => T): Observable<T> {
+    return new Observable(observer => {
+      const emitter = this.socketService.socket.on(event, (data) => {
+        observer.next(deSerializeFunction(data));
+      });
+      return () => {
+        emitter.removeEventListener(event);
+      };
+    });
+  }
+
+  lockSurvey(surveyId: string, locked: boolean, adminPwd: string) {
+    this.socketService.socket.emit(MessageControl.ClientMessages.LOCK_SURVEY_EVENT,
+       new LockedSurveyState(surveyId, locked, adminPwd).toJSON());
   }
 
   enterSurvey(surveyConnectionInfo: SurveyConnectionInfo): Observable<Message> {
@@ -37,8 +69,8 @@ export class SurveyService {
       this.socketService.socket.on(MessageControl.ServerMessages.SURVEY_INFO_EVENT, (data: CreatedPublicSurveyInfo) => {
         observer.next(new SurveyInfoMessage(data));
       });
-console.log(surveyConnectionInfo, surveyConnectionInfo.serialize());
-      this.socketService.socket.emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.serialize());
+console.log(surveyConnectionInfo, surveyConnectionInfo.toJSON());
+      this.socketService.socket.emit(MessageControl.ClientMessages.ENTER_SURVEY_EVENT, surveyConnectionInfo.toJSON());
 
       return () => {
         // this.socket.disconnect();

@@ -6,8 +6,8 @@ export class SurveyOption implements Serializable {
   get title() {
     return this._title;
   }
-  
-  serialize() {
+
+  toJSON() {
     return {
       title: this.title
     };

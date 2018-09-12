@@ -1,0 +1,27 @@
+
+<table>
+  <tr>
+    <td>
+      <details open>
+        <summary [ngClass]="{'pending': pendingParticipants?.length}">Pendente ({{pendingParticipants?.length}} de {{totalParticipants}})</summary>
+        <table class="form" *ngIf="pendingParticipants?.length">
+          <tr *ngFor="let pendingParticipant of pendingParticipants">
+            <td>{{pendingParticipant.name}}</td>
+          </tr>
+        </table>
+      </details>
+    </td>
+    <td>
+      <details open *ngIf="answeredParticipants?.length">
+        <summary class="done">Respondido ({{answeredParticipants?.length}} de {{totalParticipants}})</summary>
+        <table class="form">
+          <tr *ngFor="let answeredParticipant of answeredParticipants">
+            <td>{{answeredParticipant.name}}</td>
+          </tr>
+        </table>
+       </details>
+    </td>
+  </tr>
+</table>
+
+

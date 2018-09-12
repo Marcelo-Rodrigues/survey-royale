@@ -6,20 +6,23 @@ export class CreatedPublicSurveyInfo extends PublicSurveyInfo implements Seriali
     constructor(title: string,
         options: SurveyOption[],
         public date: Date,
+        public isLocked: boolean,
         public surveyId: string,
-        public adminPwd?: string) {
-            
-        super(title, options);
-        
+        public adminPwd?: string
+        ) {
+
+        super(title, options, isLocked);
+
     }
-    
-    serialize() {
+
+    toJSON() {
         return {
-            options: this.options.map(option => option.serialize()),
+            options: this.options.map(option => option.toJSON()),
             date: this.date,
             surveyId: this.surveyId,
             adminPwd: this.adminPwd,
-            title: this.title
+            title: this.title,
+            isLocked: this.isLocked
         };
     }
 }

@@ -2,18 +2,17 @@ import { SurveyOption } from './SurveyOption';
 import { Serializable } from './Serializable';
 
 export class PublicSurveyInfo implements Serializable {
-  public options: SurveyOption[];
-
   constructor(
     public title: string,
-    options: SurveyOption[]) { 
+    public options: SurveyOption[],
+    public isLocked: boolean) {
       this.options = options.map(option => new SurveyOption(option.title));
     }
 
-    public serialize() {
+    public toJSON() {
       return {
           title: this.title,
-          options: this.options.map(option=>option.serialize())
+          options: this.options.map(option=>option.toJSON())
        }
     }
 }

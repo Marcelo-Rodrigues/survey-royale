@@ -49,11 +49,12 @@ export class NewSurveyComponent implements OnInit {
 
   createSurvey() {
     if (this.isValid()) {
-      this.surveyService.createSurvey(new PublicSurveyInfo(this.title, this.options))
+      this.surveyService.createSurvey(new PublicSurveyInfo(this.title, this.options, true))
       .subscribe((createdSurvey: CreatedPublicSurveyInfo) => {
         this.createdSurvey = new CreatedPublicSurveyInfo(createdSurvey.title,
           createdSurvey.options,
           createdSurvey.date,
+          true,
           createdSurvey.surveyId,
           createdSurvey.adminPwd);
 
@@ -67,26 +68,15 @@ export class NewSurveyComponent implements OnInit {
 
         const serializedStorageAdmins: {[key: string]: {}} = {};
 
-        Object.values(storageAdmins).forEach(surveyAdmin => serializedStorageAdmins[surveyAdmin.surveyId] = surveyAdmin.serialize());
+        Object.values(storageAdmins).forEach(surveyAdmin => serializedStorageAdmins[surveyAdmin.surveyId] = surveyAdmin.toJSON());
 
         localStorage.setItem(NewSurveyComponent.STORAGE_ADMINS, JSON.stringify(serializedStorageAdmins));
       });
     }
   }
 
-  getSurveyUrl() {
-    const url = window.location.href;
-    const baseUrl = /(^.*)(\/new)$/g.exec(url)[1];
-    return baseUrl + '/' + this.createdSurvey.surveyId;
-  }
-
   isValid() {
     return this.options.length > 1 && this.title.trim();
   }
 
-  copyInputMessage(inputElement) {
-    inputElement.select();
-    document.execCommand('copy');
-    inputElement.setSelectionRange(0, 0);
-  }
 }

@@ -4,10 +4,10 @@ import { SurveyOption } from "./SurveyOption";
 export class SurveyAnswer implements Serializable {
   constructor(public surveyId: string, public option: SurveyOption) { }
 
-  serialize() {
+  toJSON() {
     return {
       surveyId: this.surveyId,
-      option: this.option.serialize()
+      option: this.option.toJSON()
     };
   }
 

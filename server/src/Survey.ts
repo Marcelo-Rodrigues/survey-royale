@@ -7,6 +7,7 @@ import { CreatedPublicSurveyInfo } from '../../shared/CreatedPublicSurveyInfo';
 import { PublicAnswerInfo } from '../../shared/PublicAnswerInfo';
 import { Serializable } from '../../shared/Serializable';
 import { isArray } from 'util';
+import { LockedSurveyState } from '../../shared/LockedSurveyState';
 
 export class Survey {
   private _participants: { [key: string]: Client };
@@ -15,6 +16,7 @@ export class Survey {
   private _surveyId: string;
   private _adminPwd: string;
   private _date: Date;
+  private _isLocked: boolean;
 
   constructor(private _title: string, private _options: SurveyOption[]) {
     this._participants = {};
@@ -23,6 +25,7 @@ export class Survey {
     this._surveyId = Utils.generateGUID();
     this._adminPwd = Utils.generateGUID();
     this._date = new Date();
+    this._isLocked = true;
   }
 
   get surveyId() {
@@ -45,6 +48,10 @@ export class Survey {
     return this._options;
   }
 
+  get isLocked() {
+    return this._isLocked;
+  }
+
   public addParticipant(participant: Client) {
     this._participants[participant.participantId] = participant;
   }
@@ -57,9 +64,12 @@ export class Survey {
     this._answers[answer.participantId] = answer;
     this.emitToAdmins(MessageControl.ServerMessages.ANSWERS_CHANGED_EVENT,
       Utils.getObjectValues(this._answers));
+      this.sendEventChangedPendingParticipants();
+    }
 
+  private sendEventChangedPendingParticipants(): void {
     this.emitToAdmins(MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT,
-      this.getPendingParticipants().map(participant => participant.getPublicInfo()));
+    this.getPendingParticipants().map(participant => participant.getPublicInfo()));
   }
 
   public resetAnswers() {
@@ -69,6 +79,7 @@ export class Survey {
       MessageControl.ServerMessages.RESETED_ANSWERS_EVENT
     );
     this.emitToAdmins(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT);
+    this.sendEventChangedPendingParticipants();
   }
 
   public isValidAdmin(adminPwd: string) {
@@ -80,6 +91,7 @@ export class Survey {
       this.title,
       this.options,
       this.date,
+      this.isLocked,
       this.surveyId
     );
   }
@@ -89,6 +101,7 @@ export class Survey {
       this.title,
       this.options,
       this.date,
+      this.isLocked,
       this.surveyId,
       this.adminPwd
     );
@@ -110,6 +123,10 @@ export class Survey {
 
   public removeAdmin(clientId: string) {
     this.removeClient(this._admins, clientId);
+  }
+
+  public setLockSurveyState(lockedState: LockedSurveyState): any {
+    throw new Error("Method not implemented.");
   }
 
   private removeClient(target: { [key: string]: Client }, clientId: string) {
@@ -147,8 +164,8 @@ export class Survey {
     if(objects) {
       const serializedObjects =
       isArray(objects) ?
-        objects.map(obj => obj.serialize())
-        : objects.serialize();
+        objects.map(obj => obj.toJSON())
+        : objects.toJSON();
 
         emitFunction = client => client.emit(event, serializedObjects)
 

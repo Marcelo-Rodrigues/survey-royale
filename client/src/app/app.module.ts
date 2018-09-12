@@ -15,6 +15,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { OptionCardComponent } from './shared/components/option-card/option-card.component';
 import { SOCKET_CONFIG_TOKEN, SocketIoService } from './shared/socket-io/socket-io.service';
 import { SOCKET_IO_CONFIG_DEFAULT } from './shared/socket-io/socket-io-config';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ParticipantComponent } from './survey/controls/participant/participant.component';
+import { PendingAnswersComponent } from './survey/controls/pending-answers/pending-answers.component';
+import { AnswersSummaryComponent } from './survey/controls/answers-summary/answers-summary.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SurveyAccessInfoComponent } from './survey/controls/survey-access-info/survey-access-info.component';
 
 @NgModule({
   declarations: [
@@ -25,13 +31,19 @@ import { SOCKET_IO_CONFIG_DEFAULT } from './shared/socket-io/socket-io-config';
     AdminSurveyComponent,
     ButtonComponent,
     LoginComponent,
-    OptionCardComponent
+    OptionCardComponent,
+    ParticipantComponent,
+    PendingAnswersComponent,
+    AnswersSummaryComponent,
+    SurveyAccessInfoComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatCheckboxModule
   ],
   providers: [
     SurveyService,

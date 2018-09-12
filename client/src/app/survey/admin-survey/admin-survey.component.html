@@ -1,5 +1,41 @@
-<label></label>
-
-<p *ngIf="exibirResultado">
-
-</p>
+<header>
+    <h1>Titulo {{surveyInfo?.title}}</h1>
+</header>
+<article>
+  <div class="content">
+    <mat-checkbox type="checkbox" color="primary" [(ngModel)]="allowResponse" (change)="allowResponseChanged($event)">Habilitar resposta</mat-checkbox>
+    <div class="row">
+      <app-button (click)="doShowResults()" *ngIf="!showResults" [buttonType]="buttonTypeEnum.gold">Exibir resultados</app-button>
+      <app-button (click)="doResetAnswers()" *ngIf="!showResults" [buttonType]="buttonTypeEnum.red">Reiniciar perguntas</app-button><p></p>
+    </div>
+    <table *ngIf="!showResults">
+      <tr>
+        <td>
+          Participantes
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <app-pending-answers></app-pending-answers>
+        </td>
+      </tr>
+    </table>
+    <table *ngIf="showResults && surveyInfo">
+      <tr>
+        <td [colSpan]="surveyInfo.options.length">
+          Respostas
+        </td>
+      </tr>
+      <tr>
+        <td *ngFor="let option of surveyInfo.options">
+          {{option.title}}
+        </td>
+      </tr>
+      <tr>
+        <td *ngFor="let option of surveyInfo.options">
+          Resultado de {{option.title}}
+        </td>
+      </tr>
+    </table>
+  </div>
+</article>

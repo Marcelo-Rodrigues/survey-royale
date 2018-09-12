@@ -1,5 +1,11 @@
-<table>
-  <caption><h1>{{surveyInfo?.title}}</h1></caption>
+<header>
+    <h1>{{surveyInfo?.title}}</h1>
+    <h3>{{participantName}}</h3>
+</header>
+
+<article>
+  <table class="form">
+  <tr></tr>
   <tr *ngFor="let option of surveyInfo?.options">
       <td>
           <label class="container">{{option.title}}
@@ -11,3 +17,5 @@
       </td>
   </tr>
 </table>
+</article>
+

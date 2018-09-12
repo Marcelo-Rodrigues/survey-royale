@@ -7,6 +7,8 @@ import { CreatedPublicSurveyInfo } from '../../../../../shared/CreatedPublicSurv
 import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
 import { PendingParticipantsChangeMessage } from '../../shared/messages/pending-participants-change-message';
 import { MessageControl } from '../../../../../shared/MessageControl';
+import { SurveyInfoMessage } from '../../shared/messages/survey-info-message';
+import { ButtonType } from '../../shared/components/button/button-type.enum';
 
 @Component({
   selector: 'app-admin-survey',
@@ -15,11 +17,14 @@ import { MessageControl } from '../../../../../shared/MessageControl';
 })
 export class AdminSurveyComponent implements OnInit, OnDestroy {
   public static ADM_PASSWORD = 'adm_password';
-  exibirResultado = true;
+  buttonTypeEnum = ButtonType;
+  showResults = false;
+  allowResponse = false;
   surveyId: string;
   pendingParticipants: PendingParticipantsChangeMessage;
   routeSubscription: Subscription;
   adminSubscription: Subscription;
+  surveyInfo: SurveyInfoMessage;
 
   constructor(private route: ActivatedRoute, private surveyService: SurveyService) { }
 
@@ -62,5 +67,17 @@ export class AdminSurveyComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.routeSubscription.unsubscribe();
+  }
+
+  allowResponseChanged(event: Event) {
+    console.log(this.allowResponse);
+  }
+
+  doShowResults() {
+    this.showResults = true;
+  }
+
+  doResetAnswers() {
+    this.surveyService.resetAnswers();
   }
 }

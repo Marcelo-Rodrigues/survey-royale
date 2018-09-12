@@ -20,7 +20,7 @@
       "prefix": "app",
       "styles": [
         "../node_modules/animate.css/animate.min.css",
-        "styles.css"
+        "styles.scss"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",
