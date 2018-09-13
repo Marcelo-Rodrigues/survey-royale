@@ -1,4 +1,5 @@
-export module MessageControl {
+// tslint:disable-next-line:no-namespace
+export namespace MessageControl {
   export class ServerMessages {
     public static RESETED_ANSWERS_EVENT = 'resetedAnswer';
     public static CLIENT_DISCONNECTED_EVENT = 'clientDisconnected';
@@ -8,9 +9,10 @@ export module MessageControl {
     public static LOCKED_SURVEY_STATE_CHANGED_EVENT = 'lockedSurveyChangedEvent';
   }
 
+  // tslint:disable-next-line:max-classes-per-file
   export class ServerErrorDescription {
     public static SURVEY_NOT_FOUND_ERR = (surveyId: string) => {
-        return { id: 1, message: 'Survey não encontrado', surveyId: surveyId };
+        return { id: 1, message: 'Survey não encontrado', surveyId };
     }
 
     public static ADMIN_INVALID_PWD = () => {
@@ -18,6 +20,7 @@ export module MessageControl {
     }
   }
 
+  // tslint:disable-next-line:max-classes-per-file
   export class ClientMessages {
     public static LOCK_SURVEY_EVENT = 'lockSurvey';
     public static ENTER_SURVEY_EVENT = 'enterSurvey';

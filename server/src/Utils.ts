@@ -11,6 +11,6 @@ export class Utils {
   }
 
   public static getObjectValues<T>(obj: any): T[] {
-    return (<any>Object).values(obj);
+    return (Object as any).values(obj);
   }
 }

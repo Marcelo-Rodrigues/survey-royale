@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SurveyOption } from '../../../../../../shared/SurveyOption';
+import { SurveyOption } from '../../../../../../server/shared/SurveyOption';
 
 @Component({
   selector: 'app-option-card',

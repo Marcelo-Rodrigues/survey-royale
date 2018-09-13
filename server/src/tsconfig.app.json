@@ -2,7 +2,7 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../dist",
-    "baseUrl": "./",
+    "baseUrl": "../",
     "module": "commonjs",
     "strict": false,
     "sourceMap": false,                        /* Generates corresponding '.map' file. */
@@ -13,7 +13,11 @@
       "spec"
   ],
   "include": [
-    "node_modules",
+    "../package.json",
+    "../index.ts",
     "**/*.ts"
+  ],
+  "typeRoots": [
+    "../node_modules/@types"
   ]
 }

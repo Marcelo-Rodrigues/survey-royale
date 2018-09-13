@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { CreatedPublicSurveyInfo } from '../../../../../../shared/CreatedPublicSurveyInfo';
+import { CreatedPublicSurveyInfo } from '../../../../../../server/shared/CreatedPublicSurveyInfo';
 
 @Component({
   selector: 'app-survey-access-info',

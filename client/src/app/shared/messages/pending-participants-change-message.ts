@@ -1,6 +1,6 @@
 import { Message } from './message';
-import { PublicClientInfo } from '../../../../../shared/PublicClientInfo';
-import { MessageControl } from '../../../../../shared/MessageControl';
+import { PublicClientInfo } from '../../../../../server/shared/PublicClientInfo';
+import { MessageControl } from '../../../../../server/shared/MessageControl';
 
 export class PendingParticipantsChangeMessage implements Message {
   type = MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT;

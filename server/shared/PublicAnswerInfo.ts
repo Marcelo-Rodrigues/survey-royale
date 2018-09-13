@@ -1,19 +1,19 @@
+import { ISerializable } from './Serializable';
 import { SurveyOption } from './SurveyOption';
-import { Serializable } from './Serializable'
 
-export class PublicAnswerInfo implements Serializable {
+export class PublicAnswerInfo implements ISerializable {
   public date: Date;
 
   constructor(public surveyId: string, public participantId: string, public option: SurveyOption) {
     this.date = new Date();
   }
 
-  toJSON() {
+  public toJSON() {
     return {
-      participantId: this.participantId,
-      option: this.option,
       date: this.date,
-      surveyId: this.surveyId
+      option: this.option,
+      participantId: this.participantId,
+      surveyId: this.surveyId,
     };
   }
 }
