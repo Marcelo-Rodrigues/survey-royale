@@ -10,7 +10,7 @@
     "start": "cd server/src && node index.js",
     "install": "cd client && npm install && cd ../server && npm install",
     "deploy": "npm run build-client && npm run build-server",
-    "postdeploy": "cp -r server/dist . && cp -r client/dist ./dist && mv dist/dist dist/client && cp package.json dist",
+    "postdeploy": "cp -r server/dist . && cp -r client/dist ./dist && mv dist/dist dist/client && cp server/package.json dist",
     "build-server": "cd server && npm run deploy && cd ..",
     "build-client": "cd client && npm run deploy && cd ..",
     "test": "echo \"Error: no test specified\" && exit 1"
