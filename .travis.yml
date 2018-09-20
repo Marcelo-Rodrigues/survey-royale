@@ -8,6 +8,7 @@ before_deploy:
 - cd dist
 deploy:
   provider: heroku
+  skip_cleanup: true
   api_key:
     secure: j2PY83PTn/PfI255lWm3S6t/iOej1W/4sskJJ1v5Nkl6KTkW9lLmgbFfweF1utQgHNvIFyNkEHCgCK31zlPrawVEfcmZM+e2Q65dbEwJD304eTvg2pr3Zrj1ttFf+l8lRoIs1MyIN0UERMYh6BIsfNKhFXMwpKOFU4mTkL7/xC/xLwVCKPDSqeOd4dHG8A8+2Ne774SiTUFK7BqpkDlPTr84Wzkv1cT++TcYJlmpExuZujZJsvOBNnxUwuQ15I4Yx4soLiZvfhknO6rDx/zbVqVbt0Uj71ACM8SLvjyXKCBS47Cln3m7PBPRWaTHnrkH6Vxqf+v2as/8ngKdfxttQrxylMfd04CVl3r8YO/jKRcFIS0OTZbG0K2D7/r1PpuaChGMMhwEwuzAGOQnm6cxv+aY7GaSRdqWHE74wX1jp1u1xlS9uzrZSxf7lL2ch/bjSOGyeAGm4v6/x7NY/RIw8plsKSjYqMaS1kJVHNJgIC+bwHL+c2IErL/l8Zq4iT0sRxJwkas3wOCUKWJUUk3vaxqs60uAm0trFA+8mvmaloxLfKmTZN64XNf6WySA1+bJxsbWl2qLHxJlSw2KVzJD8ugQnMCTPl+su1dQ2j5sfwOyrdPmJgY/y54eUpnaW/ZQpEt39H6NiObxGTLAbIShUjdLg3Lh4/qK4kfQasDvrho=
   app: survey-royale

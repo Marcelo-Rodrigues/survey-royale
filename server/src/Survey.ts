@@ -1,13 +1,13 @@
+import { isArray } from 'util';
+import { CreatedPublicSurveyInfo } from '../shared/CreatedPublicSurveyInfo';
+import { DisconnectedClient } from '../shared/DisconnectedClient';
+import { LockedSurveyState } from '../shared/LockedSurveyState';
+import { MessageControl } from '../shared/MessageControl';
+import { PublicAnswerInfo } from '../shared/PublicAnswerInfo';
+import { ISerializable } from '../shared/Serializable';
+import { SurveyOption } from '../shared/SurveyOption';
 import { Client } from './Client';
 import { Utils } from './Utils';
-import { SurveyOption } from '../../shared/SurveyOption';
-import { MessageControl } from '../../shared/MessageControl';
-import { DisconnectedClient } from '../../shared/DisconnectedClient';
-import { CreatedPublicSurveyInfo } from '../../shared/CreatedPublicSurveyInfo';
-import { PublicAnswerInfo } from '../../shared/PublicAnswerInfo';
-import { Serializable } from '../../shared/Serializable';
-import { isArray } from 'util';
-import { LockedSurveyState } from '../../shared/LockedSurveyState';
 
 export class Survey {
   private _participants: { [key: string]: Client };
@@ -26,6 +26,61 @@ export class Survey {
     this._adminPwd = Utils.generateGUID();
     this._date = new Date();
     this._isLocked = true;
+  }
+
+  public resetAnswers() {
+    this._answers = {};
+
+    this.emitToParticipants(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT);
+    this.emitToAdmins(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT);
+    this.sendEventChangedPendingParticipants();
+  }
+
+  public isValidAdmin(adminPwd: string) {
+    return this.adminPwd === adminPwd;
+  }
+
+  public getPublicSurveyInfo() {
+    return new CreatedPublicSurveyInfo(
+      this.title,
+      this.options,
+      this.date,
+      this.isLocked,
+      this.surveyId,
+    );
+  }
+
+  public getAdminPublicSurveyInfo() {
+    return new CreatedPublicSurveyInfo(
+      this.title,
+      this.options,
+      this.date,
+      this.isLocked,
+      this.surveyId,
+      this.adminPwd,
+    );
+  }
+
+  public getPendingParticipants() {
+    return Utils.getObjectValues<Client>(this._participants)
+      .filter((participant) => !this._answers[participant.participantId]);
+  }
+
+  public removeAll(clientId: string): any {
+    this.removeParticipant(clientId);
+    this.removeAdmin(clientId);
+  }
+
+  public removeParticipant(clientId: string) {
+    this.removeClient(this._participants, clientId);
+  }
+
+  public removeAdmin(clientId: string) {
+    this.removeClient(this._admins, clientId);
+  }
+
+  public setLockSurveyState(lockedState: LockedSurveyState): any {
+    throw new Error('Method not implemented.');
   }
 
   get surveyId() {
@@ -63,114 +118,57 @@ export class Survey {
   public answer(answer: PublicAnswerInfo) {
     this._answers[answer.participantId] = answer;
     this.emitToAdmins(MessageControl.ServerMessages.ANSWERS_CHANGED_EVENT,
-      Utils.getObjectValues(this._answers));
-      this.sendEventChangedPendingParticipants();
-    }
-
-  private sendEventChangedPendingParticipants(): void {
-    this.emitToAdmins(MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT,
-    this.getPendingParticipants().map(participant => participant.getPublicInfo()));
-  }
-
-  public resetAnswers() {
-    this._answers = {};
-
-    this.emitToParticipants(
-      MessageControl.ServerMessages.RESETED_ANSWERS_EVENT
-    );
-    this.emitToAdmins(MessageControl.ServerMessages.RESETED_ANSWERS_EVENT);
+    Utils.getObjectValues(this._answers));
     this.sendEventChangedPendingParticipants();
   }
 
-  public isValidAdmin(adminPwd: string) {
-    return this.adminPwd === adminPwd;
-  }
-
-  public getPublicSurveyInfo() {
-    return new CreatedPublicSurveyInfo(
-      this.title,
-      this.options,
-      this.date,
-      this.isLocked,
-      this.surveyId
-    );
-  }
-
-  public getAdminPublicSurveyInfo() {
-    return new CreatedPublicSurveyInfo(
-      this.title,
-      this.options,
-      this.date,
-      this.isLocked,
-      this.surveyId,
-      this.adminPwd
-    );
-  }
-
-  public getPendingParticipants() {
-    return Utils.getObjectValues<Client>(this._participants)
-      .filter(participant => !this._answers[participant.participantId]);
-  }
-
-  public removeAll(clientId: string): any {
-    this.removeParticipant(clientId);
-    this.removeAdmin(clientId);
-  }
-
-  public removeParticipant(clientId: string) {
-    this.removeClient(this._participants, clientId);
-  }
-
-  public removeAdmin(clientId: string) {
-    this.removeClient(this._admins, clientId);
-  }
-
-  public setLockSurveyState(lockedState: LockedSurveyState): any {
-    throw new Error("Method not implemented.");
+  private sendEventChangedPendingParticipants(): void {
+    this.emitToAdmins(MessageControl.ServerMessages.PENDING_PARTICIPANTS_CHANGED_EVENT,
+    this.getPendingParticipants().map((participant) => participant.getPublicInfo()));
   }
 
   private removeClient(target: { [key: string]: Client }, clientId: string) {
     const user = target[clientId];
     if (user) {
-      const userName = <string>user.name;
+      const userName = user.name as string;
       delete target[clientId];
 
       const remainingParticipants = Utils.getObjectValues<Client>(
-        this._participants
-      ).map(participants => <string>participants.name);
+        this._participants,
+      ).map((participants) => participants.name as string);
 
       this.emitToAdmins(
         MessageControl.ServerMessages.CLIENT_DISCONNECTED_EVENT,
-        new DisconnectedClient(userName, remainingParticipants)
+        new DisconnectedClient(userName, remainingParticipants),
       );
     }
   }
 
-  private emitToParticipants(event: string, obj?: Serializable | Serializable[]) {
+  private emitToParticipants(event: string, obj?: ISerializable | ISerializable[]) {
     this.emitToClients(this._participants, event, obj);
   }
 
-  private emitToAdmins(event: string, obj?: Serializable | Serializable[]) {
+  private emitToAdmins(event: string, obj?: ISerializable | ISerializable[]) {
     this.emitToClients(this._admins, event, obj);
   }
 
   private emitToClients(
     target: { [key: string]: Client },
     event: string,
-    objects?: Serializable | Serializable[]
+    objects?: ISerializable | ISerializable[],
   ) {
     let emitFunction: (client: Client) => any;
 
-    if(objects) {
+    if (objects) {
       const serializedObjects =
       isArray(objects) ?
-        objects.map(obj => obj.toJSON())
-        : objects.toJSON();
+        (objects as ISerializable[]).map((obj) => obj.toJSON())
+        : (objects as ISerializable).toJSON();
 
-        emitFunction = client => client.emit(event, serializedObjects)
+      emitFunction = (client) => client.emit(event, serializedObjects);
 
     } else {
-      emitFunction = client => client.emit(event)
+      emitFunction = (client) => client.emit(event);
     }
 
     Utils.getObjectValues<Client>(target).forEach(emitFunction);

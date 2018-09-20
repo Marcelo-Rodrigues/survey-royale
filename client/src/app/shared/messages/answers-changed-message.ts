@@ -1,6 +1,6 @@
 import { Message } from './message';
-import { PublicAnswerInfo } from '../../../../../shared/PublicAnswerInfo';
-import { MessageControl } from '../../../../../shared/MessageControl';
+import { PublicAnswerInfo } from '../../../../../server/shared/PublicAnswerInfo';
+import { MessageControl } from '../../../../../server/shared/MessageControl';
 
 export class AnswersChangeMessage implements Message {
   type = MessageControl.ServerMessages.ANSWERS_CHANGED_EVENT;

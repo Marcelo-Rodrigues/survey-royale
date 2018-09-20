@@ -3,10 +3,10 @@ import { SurveyService } from '../../shared/survey.service';
 import { Subscription } from 'rxjs/Subscription';
 import { ActivatedRoute } from '@angular/router';
 import { NewSurveyComponent } from '../new-survey/new-survey.component';
-import { CreatedPublicSurveyInfo } from '../../../../../shared/CreatedPublicSurveyInfo';
-import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
+import { CreatedPublicSurveyInfo } from '../../../../../server/shared/CreatedPublicSurveyInfo';
+import { SurveyConnectionInfo } from '../../../../../server/shared/SurveyConnectionInfo';
 import { PendingParticipantsChangeMessage } from '../../shared/messages/pending-participants-change-message';
-import { MessageControl } from '../../../../../shared/MessageControl';
+import { MessageControl } from '../../../../../server/shared/MessageControl';
 import { SurveyInfoMessage } from '../../shared/messages/survey-info-message';
 import { ButtonType } from '../../shared/components/button/button-type.enum';
 

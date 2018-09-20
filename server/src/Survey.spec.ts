@@ -1,42 +1,40 @@
-import "jasmine";
-import { Survey } from "./Survey";
-import { SurveyOption } from "../../shared/SurveyOption";
-import { Client } from "./Client";
+import 'jasmine';
+import { SurveyOption } from '../shared/SurveyOption';
+import { Survey } from './Survey';
 
-describe("A suite is just a function", () => {
-  var a;
+describe('A suite is just a function', () => {
+  let a;
 
-  it("and so is a spec", () => {
+  it('and so is a spec', () => {
     a = true;
 
     expect(a).toBe(true);
   });
 });
 
-
-describe("A Survey", () => {
+describe('A Survey', () => {
   let surveyOptions: SurveyOption[];
   let survey: Survey;
   let surveyTitle: string;
 
-  beforeEach(()=> {
+  beforeEach(() => {
     surveyOptions = [
       new SurveyOption('Test Opt 1'),
-      new SurveyOption('Test Opt 2')
+      new SurveyOption('Test Opt 2'),
     ];
     surveyTitle = 'SurveyTest';
     survey = new Survey(surveyTitle, surveyOptions);
   });
 
-  it("has correct answer options", () => {
+  it('has correct answer options', () => {
     expect(survey.options).toBe(surveyOptions);
   });
 
-  it("has correct title", () => {
+  it('has correct title', () => {
     expect(survey.title).toBe(surveyTitle);
   });
 
-  // it("has correct title", () => {
+  // it('has correct title', () => {
   //   let socket: SocketIO.Socket = {
 
   //   };

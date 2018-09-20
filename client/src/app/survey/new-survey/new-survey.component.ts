@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ButtonType } from '../../shared/components/button/button-type.enum';
 import { SurveyService } from '../../shared/survey.service';
-import { SurveyOption } from '../../../../../shared/SurveyOption';
-import { PublicSurveyInfo } from '../../../../../shared/PublicSurveyInfo';
-import { CreatedPublicSurveyInfo } from '../../../../../shared/CreatedPublicSurveyInfo';
+import { SurveyOption } from '../../../../../server/shared/SurveyOption';
+import { PublicSurveyInfo } from '../../../../../server/shared/PublicSurveyInfo';
+import { CreatedPublicSurveyInfo } from '../../../../../server/shared/CreatedPublicSurveyInfo';
 
 @Component({
   selector: 'app-new-survey',

@@ -1,13 +1,13 @@
-import { Serializable } from "./Serializable";
+import { ISerializable } from './Serializable';
 
-export class SurveyConnectionInfo implements Serializable {
+export class SurveyConnectionInfo implements ISerializable {
   constructor(public surveyId: string, public participantName: string, public adminPwd?: string) {}
 
   public toJSON() {
     return {
-      surveyId: this.surveyId,
+      adminPwd: this.adminPwd,
       participantName: this.participantName,
-      adminPwd: this.adminPwd
-    }
+      surveyId: this.surveyId,
+    };
   }
 }

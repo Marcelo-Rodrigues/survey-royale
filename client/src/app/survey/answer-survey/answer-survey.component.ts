@@ -4,9 +4,9 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SurveyService } from '../../shared/survey.service';
 import { Subscription } from 'rxjs/Subscription';
 import { SurveyInfoMessage } from '../../shared/messages/survey-info-message';
-import { SurveyConnectionInfo } from '../../../../../shared/SurveyConnectionInfo';
-import { MessageControl } from '../../../../../shared/MessageControl';
-import { SurveyOption } from '../../../../../shared/SurveyOption';
+import { SurveyConnectionInfo } from '../../../../../server/shared/SurveyConnectionInfo';
+import { MessageControl } from '../../../../../server/shared/MessageControl';
+import { SurveyOption } from '../../../../../server/shared/SurveyOption';
 
 @Component({
   selector: 'app-answer-survey',

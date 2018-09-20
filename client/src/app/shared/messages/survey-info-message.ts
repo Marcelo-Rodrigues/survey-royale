@@ -1,7 +1,7 @@
 import { Message } from './message';
-import { CreatedPublicSurveyInfo } from '../../../../../shared/CreatedPublicSurveyInfo';
-import { SurveyOption } from '../../../../../shared/SurveyOption';
-import { MessageControl } from '../../../../../shared/MessageControl';
+import { CreatedPublicSurveyInfo } from '../../../../../server/shared/CreatedPublicSurveyInfo';
+import { SurveyOption } from '../../../../../server/shared/SurveyOption';
+import { MessageControl } from '../../../../../server/shared/MessageControl';
 
 export class SurveyInfoMessage implements Message {
   type = MessageControl.ServerMessages.SURVEY_INFO_EVENT;
