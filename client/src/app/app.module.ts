@@ -21,6 +21,8 @@ import { PendingAnswersComponent } from './survey/controls/pending-answers/pendi
 import { AnswersSummaryComponent } from './survey/controls/answers-summary/answers-summary.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SurveyAccessInfoComponent } from './survey/controls/survey-access-info/survey-access-info.component';
+import { NgxsModule } from '@ngxs/store';
+import { OptionsState } from './shared/state/options-state';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,8 @@ import { SurveyAccessInfoComponent } from './survey/controls/survey-access-info/
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    NgxsModule.forRoot([OptionsState])
   ],
   providers: [
     SurveyService,

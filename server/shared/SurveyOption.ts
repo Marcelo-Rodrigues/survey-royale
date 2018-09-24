@@ -1,11 +1,7 @@
 import { ISerializable } from './Serializable';
 
 export class SurveyOption implements ISerializable {
-  constructor(private _title: string) { }
-
-  get title() {
-    return this._title;
-  }
+  constructor(public title: string) { }
 
   public toJSON() {
     return {
